@@ -26,12 +26,54 @@ int Return(int val);
 
 
     /* definitions go here. PUNCTUATION is an example. */
-PUNCTUATION          [.?;!]
+PUNCTUATION          [()\[\];,.+\-*/=^<>]
 
 %%
 
     // token definitions go here. "if" is an example.
-"if"                        DO_RETURN(IF);
+"{".*"}"
+"IF"                        DO_RETURN(IF);
+"ELSE"                      DO_RETURN(ELSE);
+"WHILE"                     DO_RETURN(WHILE);
+"PROGRAM"                   DO_RETURN(PROGRAM);
+"PROCEDURE"                 DO_RETURN(PROCEDURE);
+"FUNCTION"                  DO_RETURN(FUNCTION);
+"THEN"                      DO_RETURN(THEN);
+"REPEAT"                    DO_RETURN(REPEAT);
+"BEGIN"                     DO_RETURN(OPEN);
+"END"                       DO_RETURN(CLOSE);
+"UNTIL"                     DO_RETURN(UNTIL);
+"FOR"                       DO_RETURN(FOR);
+"DO"                        DO_RETURN(DO);
+"TO"                        DO_RETURN(TO);
+"DOWNTO"                    DO_RETURN(DOWNTO);
+"FORWARD"                   DO_RETURN(FORWARD);
+"CONST"                     DO_RETURN(CONST);
+"TYPE"                      DO_RETURN(TYPE);
+"VAR"                       DO_RETURN(VAR);
+"ARRAY"                     DO_RETURN(ARRAY);
+"RECORD"                    DO_RETURN(RECORD);
+"OF"                        DO_RETURN(OF);
+"NIL"                       DO_RETURN(NIL);
+"integer"                   DO_RETURN(INTEGER);
+"real"                      DO_RETURN(REAL);
+"char"                      DO_RETURN(CHAR);
+"<>"                        DO_RETURN(NOT_EQUAL);
+"<="                        DO_RETURN(LE);
+">="                        DO_RETURN(GE);
+":="                        DO_RETURN(ASSIGN);
+"OR"                        DO_RETURN(OR);
+"DIV"                       DO_RETURN(DIV);
+"MOD"                       DO_RETURN(MOD);
+"WRITE"                     DO_RETURN(WRITE);
+"AND"                       DO_RETURN(AND);
+"NOT"                       DO_RETURN(NOT);
+[a-zA-Z][a-zA-Z0-9]*        DO_RETURN(IDENTIFIER);
+[0-9]+                      DO_RETURN(INT_VAL);
+[0-9]+\.[0-9]+              DO_RETURN(REAL_VAL);
+{PUNCTUATION}               DO_RETURN(yytext[0]);
+[ \n\t\r]
+.                           DO_RETURN(JUNK_TOKEN);
 
 %%
 
@@ -41,4 +83,3 @@ int Return(int val)
     printf("Scanned '%s': %d\n", yytext, val);
     return val;
 }
-
