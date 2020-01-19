@@ -4,18 +4,32 @@
 //
 // Scanner definition file for CST 320 project
 //
-// Author: Phil Howard 
+// Authors: Phil Howard, Cade McNiven 
 // phil.howard@oit.edu
+// cade.mcniven@oit.edu
 //
-// Date: Dec. 6, 2017
+// Date: Jan 16, 2020
 //
 
+#include <string>
+#include <algorithm>
 #include "tokens.h"
+#include "lex.h"
+#include "cSymbolTable.h"
+
+using std::string;
 
     // comment out the other line to generate debug info
 #define DO_RETURN(a) return (a)
 //#define DO_RETURN(a) return Return(a)
 int Return(int val);
+string ToLower(string str);
+void IncreaseScope();
+void DecreaseScope();
+cSymbol *  Insert(string name);
+
+extern cSymbolTable g_symbolTable;
+yylval_t yylval;
 
 %}
 
@@ -27,10 +41,20 @@ int Return(int val);
 
     /* definitions go here. PUNCTUATION is an example. */
 PUNCTUATION          [()\[\];,.+\-*/=^<>]
+IDENTIFIER           [a-zA-Z][a-zA-Z0-9]*
 
 %%
 
-    // token definitions go here. "if" is an example.
+"BEGIN"                     {
+                              IncreaseScope();
+                              return yytext[0];
+                            }
+"END"                       {
+                              DecreaseScope();
+                              return yytext[0];
+                            }
+
+    /* token definitions go here. "if" is an example. */
 "{".*"}"
 "IF"                        DO_RETURN(IF);
 "ELSE"                      DO_RETURN(ELSE);
@@ -40,8 +64,6 @@ PUNCTUATION          [()\[\];,.+\-*/=^<>]
 "FUNCTION"                  DO_RETURN(FUNCTION);
 "THEN"                      DO_RETURN(THEN);
 "REPEAT"                    DO_RETURN(REPEAT);
-"BEGIN"                     DO_RETURN(OPEN);
-"END"                       DO_RETURN(CLOSE);
 "UNTIL"                     DO_RETURN(UNTIL);
 "FOR"                       DO_RETURN(FOR);
 "DO"                        DO_RETURN(DO);
@@ -68,7 +90,10 @@ PUNCTUATION          [()\[\];,.+\-*/=^<>]
 "WRITE"                     DO_RETURN(WRITE);
 "AND"                       DO_RETURN(AND);
 "NOT"                       DO_RETURN(NOT);
-[a-zA-Z][a-zA-Z0-9]*        DO_RETURN(IDENTIFIER);
+{IDENTIFIER}                {
+                              yylval.symbol = Insert(yytext);
+                              return IDENTIFIER;
+                            }
 [0-9]+                      DO_RETURN(INT_VAL);
 [0-9]+\.[0-9]+              DO_RETURN(REAL_VAL);
 {PUNCTUATION}               DO_RETURN(yytext[0]);
@@ -77,9 +102,44 @@ PUNCTUATION          [()\[\];,.+\-*/=^<>]
 
 %%
 
+//*************************************************************
 // This function allows us to do extra processing on each token
 int Return(int val)
 {
     printf("Scanned '%s': %d\n", yytext, val);
     return val;
+}
+
+//*************************************************************
+void IncreaseScope()
+{
+  g_symbolTable.IncreaseScope();
+}
+
+//*************************************************************
+void DecreaseScope()
+{
+  g_symbolTable.DecreaseScope();
+}
+
+//*************************************************************
+cSymbol *  Insert(string name)
+{
+  name = ToLower(name);
+  cSymbol * symbol = g_symbolTable.LookupSymbolLocal(name);
+  
+  if (symbol == nullptr)
+  {
+    symbol = new cSymbol(name);
+    g_symbolTable.InsertSymbol(symbol);
+  }
+
+  return symbol;
+}
+
+string ToLower(string str)
+{
+  transform(str.begin(), str.end(), str.begin(), ::tolower);
+
+  return str;
 }

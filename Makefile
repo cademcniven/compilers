@@ -1,13 +1,15 @@
 ##############################################
 # Makefile for CST320 labs
 #
-# Author: Philip Howard
+# Authors: Philip Howard, Cade McNiven
 # phil.howard@oit.edu
+# cade.mcniven@oit.edu
 #
 
-COPTS=-Wall -g -c  -O0 -std=c++11
+COPTS=-Wall -g -c -O0 -std=c++11
 OBJS=main.o \
 	 pascallex.o \
+	 cSymbolTable.o \
 
 all: pascal
 
@@ -16,6 +18,7 @@ clean:
 	rm -f pascallex.c
 	rm -f pascal
 	rm -f out
+	rm -f *.xml
 
 .c.o:
 	g++ $(COPTS) $? -o $@
@@ -23,8 +26,11 @@ clean:
 .cpp.o:
 	g++ $(COPTS) $? -o $@
 
-main.o: main.cpp pascallex.c 
+main.o: main.cpp pascallex.c
 	g++ $(COPTS) main.cpp -o main.o
+
+cSymbolTable.o: cSymbolTable.cpp
+	g++ $(COPTS) cSymbolTable.cpp -o cSymbolTable.o
 
 pascallex.c: pascal.l
 	flex -o pascallex.c pascal.l
