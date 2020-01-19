@@ -137,6 +137,7 @@ cSymbol *  Insert(string name)
   return symbol;
 }
 
+//*************************************************************
 string ToLower(string str)
 {
   transform(str.begin(), str.end(), str.begin(), ::tolower);
