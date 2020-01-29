@@ -17,14 +17,15 @@ using std::unordered_map;
 
 class cSymbolTable
 {
-  public:
-    cSymbolTable() : _topTableIndex(-1) {}
-    void IncreaseScope();
-    void DecreaseScope();
-    void InsertSymbol(cSymbol * symbol);
-    cSymbol * LookupSymbol(string name);
-    cSymbol * LookupSymbolLocal(string name);
-  private:
-    unordered_map<int, unordered_map<string, cSymbol*>> _symbolTables;
-    int _topTableIndex;
+    public:
+        cSymbolTable() : _topTableIndex(-1) { InsertKeywords(); }
+        void IncreaseScope();
+        void DecreaseScope();
+        void InsertSymbol(cSymbol * symbol);
+        cSymbol * LookupSymbol(string name);
+        cSymbol * LookupSymbolLocal(string name);
+    private:
+        unordered_map<int, unordered_map<string, cSymbol*>> _symbolTables;
+        int _topTableIndex;
+        void InsertKeywords();
 };

@@ -19,13 +19,14 @@
 
 using std::string;
 
-    // comment out the other line to generate debug info
+        // comment out the other line to generate debug info
 #define DO_RETURN(a) return (a)
 //#define DO_RETURN(a) return Return(a)
 int Return(int val);
 string ToLower(string str);
 void IncreaseScope();
 void DecreaseScope();
+int ProcessIdentifier();
 cSymbol *  Insert(string name);
 
 extern cSymbolTable g_symbolTable;
@@ -38,67 +39,20 @@ yylval_t yylval;
 %option nounput
 %option yylineno
 
-
-    /* definitions go here. PUNCTUATION is an example. */
-PUNCTUATION          [()\[\];,.+\-*/=^<>]
-IDENTIFIER           [a-zA-Z][a-zA-Z0-9]*
+        /* definitions go here. PUNCTUATION is an example. */
+PUNCTUATION                  [()\[\];,.+\-*/=^<>]
+IDENTIFIER                   [a-zA-Z][a-zA-Z0-9]*
 
 %%
 
-"BEGIN"                     {
-                              IncreaseScope();
-                              return yytext[0];
-                            }
-"END"                       {
-                              DecreaseScope();
-                              return yytext[0];
-                            }
-
-    /* token definitions go here. "if" is an example. */
+        /* token definitions go here. "if" is an example. */
 "{".*"}"
-"IF"                        DO_RETURN(IF);
-"ELSE"                      DO_RETURN(ELSE);
-"WHILE"                     DO_RETURN(WHILE);
-"PROGRAM"                   DO_RETURN(PROGRAM);
-"PROCEDURE"                 DO_RETURN(PROCEDURE);
-"FUNCTION"                  DO_RETURN(FUNCTION);
-"THEN"                      DO_RETURN(THEN);
-"REPEAT"                    DO_RETURN(REPEAT);
-"UNTIL"                     DO_RETURN(UNTIL);
-"FOR"                       DO_RETURN(FOR);
-"DO"                        DO_RETURN(DO);
-"TO"                        DO_RETURN(TO);
-"DOWNTO"                    DO_RETURN(DOWNTO);
-"FORWARD"                   DO_RETURN(FORWARD);
-"CONST"                     DO_RETURN(CONST);
-"TYPE"                      DO_RETURN(TYPE);
-"VAR"                       DO_RETURN(VAR);
-"ARRAY"                     DO_RETURN(ARRAY);
-"RECORD"                    DO_RETURN(RECORD);
-"OF"                        DO_RETURN(OF);
-"NIL"                       DO_RETURN(NIL);
-"integer"                   DO_RETURN(INTEGER);
-"real"                      DO_RETURN(REAL);
-"char"                      DO_RETURN(CHAR);
-"<>"                        DO_RETURN(NOT_EQUAL);
-"<="                        DO_RETURN(LE);
-">="                        DO_RETURN(GE);
-":="                        DO_RETURN(ASSIGN);
-"OR"                        DO_RETURN(OR);
-"DIV"                       DO_RETURN(DIV);
-"MOD"                       DO_RETURN(MOD);
-"WRITE"                     DO_RETURN(WRITE);
-"AND"                       DO_RETURN(AND);
-"NOT"                       DO_RETURN(NOT);
-{IDENTIFIER}                {
-                              yylval.symbol = Insert(yytext);
-                              return IDENTIFIER;
-                            }
-[0-9]+                      DO_RETURN(INT_VAL);
-[0-9]+\.[0-9]+              DO_RETURN(REAL_VAL);
-{PUNCTUATION}               DO_RETURN(yytext[0]);
+{IDENTIFIER}           DO_RETURN(ProcessIdentifier());
+[0-9]+                 DO_RETURN(INT_VAL);
+[0-9]+\.[0-9]+         DO_RETURN(REAL_VAL);
+{PUNCTUATION}          DO_RETURN(yytext[0]);
 [ \n\t\r]
-.                           DO_RETURN(JUNK_TOKEN);
+.                      DO_RETURN(JUNK_TOKEN);
 
 %%
 
@@ -106,41 +60,66 @@ IDENTIFIER           [a-zA-Z][a-zA-Z0-9]*
 // This function allows us to do extra processing on each token
 int Return(int val)
 {
-    printf("Scanned '%s': %d\n", yytext, val);
-    return val;
+        printf("Scanned '%s': %d\n", yytext, val);
+        return val;
 }
 
 //*************************************************************
 void IncreaseScope()
 {
-  g_symbolTable.IncreaseScope();
+    g_symbolTable.IncreaseScope();
 }
 
 //*************************************************************
 void DecreaseScope()
 {
-  g_symbolTable.DecreaseScope();
+    g_symbolTable.DecreaseScope();
 }
 
 //*************************************************************
 cSymbol *  Insert(string name)
 {
-  name = ToLower(name);
-  cSymbol * symbol = g_symbolTable.LookupSymbolLocal(name);
-  
-  if (symbol == nullptr)
-  {
-    symbol = new cSymbol(name);
-    g_symbolTable.InsertSymbol(symbol);
-  }
+    name = ToLower(name);
 
-  return symbol;
+    cSymbol * symbol = g_symbolTable.LookupSymbolLocal(name);
+    
+    if (symbol == nullptr)
+    {
+        symbol = new cSymbol(name, -1);
+        g_symbolTable.InsertSymbol(symbol);
+    }
+
+    return symbol;
+}
+
+//*************************************************************
+int ProcessIdentifier()
+{
+    string name = ToLower(yytext);
+    if (name == "begin")
+    {
+        IncreaseScope();
+        return yytext[0];
+    }
+
+    if (name == "end")
+    {
+        DecreaseScope();
+        return yytext[0];
+    }
+
+    cSymbol * symbol = g_symbolTable.LookupSymbol(name);
+    if (symbol != nullptr && symbol->GetTokenType() != IDENTIFIER)
+        return symbol->GetTokenType();
+
+    yylval.symbol = Insert(yytext);
+    return IDENTIFIER;
 }
 
 //*************************************************************
 string ToLower(string str)
 {
-  transform(str.begin(), str.end(), str.begin(), ::tolower);
+    transform(str.begin(), str.end(), str.begin(), ::tolower);
 
-  return str;
+    return str;
 }
