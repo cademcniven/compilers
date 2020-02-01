@@ -82,6 +82,12 @@ void cSymbolTable::InsertKeywords()
     keyword = new cSymbol("real", 3);
     InsertSymbol(keyword);
 
+    keyword = new cSymbol("begin", OPEN);
+    InsertSymbol(keyword);
+
+    keyword = new cSymbol("end", CLOSE);
+    InsertSymbol(keyword);
+
     keyword = new cSymbol("if", IF);
     InsertSymbol(keyword);
 

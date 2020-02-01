@@ -13,9 +13,10 @@
 
 #include <string>
 #include <algorithm>
-#include "tokens.h"
-#include "lex.h"
+#include "astnodes.h"
 #include "cSymbolTable.h"
+#include "pascalparse.h"
+#include "lex.h"
 
 using std::string;
 
@@ -24,13 +25,10 @@ using std::string;
 //#define DO_RETURN(a) return Return(a)
 int Return(int val);
 string ToLower(string str);
-void IncreaseScope();
-void DecreaseScope();
 int ProcessIdentifier();
 cSymbol *  Insert(string name);
 
 extern cSymbolTable g_symbolTable;
-yylval_t yylval;
 
 %}
 
@@ -48,8 +46,10 @@ IDENTIFIER                   [a-zA-Z][a-zA-Z0-9]*
         /* token definitions go here. "if" is an example. */
 "{".*"}"
 {IDENTIFIER}           DO_RETURN(ProcessIdentifier());
-[0-9]+                 DO_RETURN(INT_VAL);
-[0-9]+\.[0-9]+         DO_RETURN(REAL_VAL);
+[0-9]+                 {    yylval.int_val = std::atoi(yytext);
+                            DO_RETURN(INT_VAL);}
+[0-9]+\.[0-9]+         {    yylval.real_val = std::atof(yytext);
+                            DO_RETURN(REAL_VAL);}
 {PUNCTUATION}          DO_RETURN(yytext[0]);
 [ \n\t\r]
 .                      DO_RETURN(JUNK_TOKEN);
@@ -62,18 +62,6 @@ int Return(int val)
 {
         printf("Scanned '%s': %d\n", yytext, val);
         return val;
-}
-
-//*************************************************************
-void IncreaseScope()
-{
-    g_symbolTable.IncreaseScope();
-}
-
-//*************************************************************
-void DecreaseScope()
-{
-    g_symbolTable.DecreaseScope();
 }
 
 //*************************************************************
@@ -96,20 +84,9 @@ cSymbol *  Insert(string name)
 int ProcessIdentifier()
 {
     string name = ToLower(yytext);
-    if (name == "begin")
-    {
-        IncreaseScope();
-        return yytext[0];
-    }
-
-    if (name == "end")
-    {
-        DecreaseScope();
-        return yytext[0];
-    }
 
     cSymbol * symbol = g_symbolTable.LookupSymbol(name);
-    if (symbol != nullptr && symbol->GetTokenType() != IDENTIFIER)
+    if (symbol != nullptr)
         return symbol->GetTokenType();
 
     yylval.symbol = Insert(yytext);
