@@ -251,7 +251,7 @@ statement: variable ASSIGN expr ';'
     |   REPEAT statements UNTIL expr ';'
                                 { }
     |   WHILE expr DO statement
-                                { }
+                                { $$ = new cWhileNode($2, $4); }
     |   FOR IDENTIFIER ASSIGN expr TO expr DO statement
                                 {}
     |   FOR IDENTIFIER ASSIGN expr DOWNTO expr DO statement

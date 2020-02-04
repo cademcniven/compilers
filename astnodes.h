@@ -33,3 +33,4 @@
 #include "cAssignNode.h"
 #include "cIfNode.h"
 #include "cCompoundStmtNode.h"
+#include "cWhileNode.h"
