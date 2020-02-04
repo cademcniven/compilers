@@ -20,19 +20,22 @@ extern cSymbolTable g_symbolTable;
 
  /* union defines the type for lexical values */
 %union{
-    int             int_val;
-    double          real_val;
-    cAstNode*       ast_node;
-    cProgramNode*   program_node;
-    cBlockNode*     block_node;
-    cStmtsNode*     stmts_node;
-    cStmtNode*      stmt_node;
-    cExprNode*      expr_node;
-    cSymbol*        symbol;
-    cDeclsNode*     decls_node;
-    cDeclNode*      decl_node;
-    cExprListNode*  exprList_node;
-    cIntExprNode*   intExpr_node;
+    int               int_val;
+    double            real_val;
+    cAstNode*         ast_node;
+    cProgramNode*     program_node;
+    cBlockNode*       block_node;
+    cStmtsNode*       stmts_node;
+    cStmtNode*        stmt_node;
+    cExprNode*        expr_node;
+    cSymbol*          symbol;
+    cDeclsNode*       decls_node;
+    cDeclNode*        decl_node;
+    cExprListNode*    exprList_node;
+    cIntExprNode*     intExpr_node;
+    cIdListNode*      idList_node;
+    cVarDeclsNode*    varDecls_node;
+    cVarDeclNode*     varDecl_node;
     }
 
 %{
@@ -71,8 +74,8 @@ extern cSymbolTable g_symbolTable;
 %type <program_node> program
 %type <symbol> header
 %type <block_node> block
-%type <ast_node> type
-%type <ast_node> decls
+%type <symbol> type
+%type <decls_node> decls
 %type <ast_node> constdecls
 %type <ast_node> constdecl
 %type <ast_node> constant
@@ -81,28 +84,28 @@ extern cSymbolTable g_symbolTable;
 %type <ast_node> singleType
 %type <ast_node> rangeList
 %type <ast_node> range
-%type <ast_node> goodvar
-%type <ast_node> onevar
+%type <varDecls_node> goodvar
+%type <varDecls_node> onevar
 %type <ast_node> recorddef
-%type <ast_node> vardecls
-%type <ast_node> vardecl;
+%type <varDecls_node> vardecls
+%type <varDecls_node> vardecl;
 %type <ast_node> procdecls
 %type <ast_node> paramSpec
 %type <ast_node> procdecl
 %type <ast_node> parlist
-%type <ast_node> idlist
+%type <idList_node> idlist
 %type <ast_node> func_call
 %type <ast_node> funcProto
 %type <ast_node> funcHeader
 %type <ast_node> procHeader
 %type <stmts_node> statements
 %type <stmt_node> statement
-%type <intExpr_node> expr
-%type <intExpr_node> oneExpr
-%type <intExpr_node> addit
-%type <intExpr_node> term
-%type <intExpr_node> fact
-%type <ast_node> variable
+%type <expr_node> expr
+%type <expr_node> oneExpr
+%type <expr_node> addit
+%type <expr_node> term
+%type <expr_node> fact
+%type <symbol> variable
 %type <ast_node> varpart
 %type <exprList_node> exprList
 %type <ast_node> recHeader
@@ -118,19 +121,25 @@ program: header block '.'
                                 }
 header: PROGRAM IDENTIFIER ';'
                                 {
-                                   //g_symbolTable.IncreaseScope();
+                                   g_symbolTable.IncreaseScope();
                                    $$ = $2; 
                                 }
 block:  decls OPEN statements CLOSE
                                 {   
-                                    $$ = new cBlockNode(nullptr, $3); }
-
+                                    $$ = new cBlockNode($1, $3); }
 decls: constdecls typedecls vardecls procdecls
-                                { }
+                                { $$ = new cDeclsNode(nullptr);
+                                  $$->AddDecls($3);
+                                }
+                                  
+        | /* empty */
+                                { $$ = nullptr; }
+
+
 constdecls: CONST constdecl ';'
                                 { }
         | /*empty */
-                                { }
+                                { $$ = nullptr; }
 constdecl: constdecl ';' IDENTIFIER '=' constant 
                                 { }
         |  IDENTIFIER '=' constant 
@@ -138,7 +147,7 @@ constdecl: constdecl ';' IDENTIFIER '=' constant
 typedecls: TYPE typedecl
                                 { }
         | /*empty */
-                                { }
+                                { $$ = nullptr; }
 typedecl: typedecl singleType
                                 { }
         |  singleType
@@ -157,23 +166,25 @@ range: INT_VAL '.' '.' INT_VAL
                                 { }
 
 vardecls: VAR vardecl
-                                { }
+                                { $$ = $2; }
         | /* empty */
-                                { }
+                                { $$ = nullptr; }
 vardecl: vardecl onevar
-                                { }
+                                { $$ = $1;
+                                  $$->AddDecls($2); }
         | onevar
-                                { }
+                                { $$ = new cVarDeclsNode();
+                                  $$->AddDecls($1); }
 onevar: goodvar ';'
-                                { }
+                                { $$ = $1; }
         | error ';'
                                 { }
 goodvar: idlist ':' type
-                                { }
+                                { $$ = new cVarDeclsNode($1, $3); }
 procdecls: procdecls procdecl
                                 { }
         | /* empty */
-                                { }
+                                { $$ = nullptr; }
 
 procdecl: procHeader paramSpec ';' block ';'
                                 { }
@@ -196,12 +207,13 @@ funcProto: funcHeader paramSpec ':' type
 paramSpec: '(' parlist ')'
                                 { }
         | /* empty */
-                                { }
+                                { $$ = nullptr; }
 
 idlist: idlist ',' IDENTIFIER
-                                { }
+                                { $$ = $1;
+                                  $$->AddId($3); }
     |    IDENTIFIER
-                                { }
+                                { $$ = new cIdListNode($1);  }
 
 parlist: parlist ';' VAR idlist ':' type 
                                 { }
@@ -213,7 +225,7 @@ parlist: parlist ';' VAR idlist ':' type
                                 { }
 
 type: TYPE_ID
-                                { }
+                                { $$ = $1; }
 recHeader: RECORD
                                 { }
 recorddef: vardecl CLOSE
@@ -230,7 +242,8 @@ statements: statements statement
                                 { $$ = new cStmtsNode($1); }
 
 statement: variable ASSIGN expr ';'
-                                { }
+                                { $$ = new cAssignNode(
+                                    new cVarExprNode($1), $3); }
     |   IF expr THEN statement
                                 { }
     |   IF expr THEN statement ELSE statement
@@ -262,7 +275,7 @@ exprList: exprList ',' oneExpr
         | oneExpr
                                 { $$ = new cExprListNode($1); }
         | /* empty */
-                                { }
+                                { $$ = nullptr; }
 oneExpr: expr
                                 { $$ = $1; }
 
@@ -274,62 +287,62 @@ variable: variable '.' varpart
         | variable '[' exprList ']'
                                 { }
         | varpart
-                                { }
+                                {  }
 
 varpart:  IDENTIFIER
                                 { }
 
 expr:       expr '=' addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, '=', $3); }
         |   expr '>' addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, '>', $3); }
         |   expr '<' addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, '<', $3); }
         |   expr LE addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, LE, $3); }
         |   expr GE addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, GE, $3); }
         |   expr NOT_EQUAL addit
-                                {}
+                                { $$ = new cBinaryExprNode($1, NOT_EQUAL, $3); }
         |   addit
                                 { $$ = $1; }
 
 addit:      addit '+' term
-                                { }
+                                { $$ = new cBinaryExprNode($1, '+', $3); }
         |   addit '-' term
-                                { }
+                                { $$ = new cBinaryExprNode($1, '-', $3); }
         |   addit OR term
-                                { }
+                                { $$ = new cBinaryExprNode($1, OR, $3); }
         |   term
                                 { $$ = $1; }
         |   '-' term
-                                { }
+                                { $$ = new cUnaryExprNode('-', $2); }
 
 term:       term '*' fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, '*', $3); }
         |   term '/' fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, '/', $3); }
         |   term MOD fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, MOD, $3); }
         |   term DIV fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, DIV, $3); }
         |   term AND fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, AND, $3); }
         |   fact
                                 { $$ = $1; }
 
 fact:        '(' expr ')'
-                                { }
+                                { $$ = $2; }
         |   INT_VAL
                                 { $$ = new cIntExprNode($1); }
         |   REAL_VAL
                                 { $$ = new cRealExprNode($1);  }
         |   variable
-                                { }
+                                { $$ = new cVarExprNode($1); }
         |   func_call
                                 { }
         |   NOT fact
-                                { }
+                                { $$ = new cUnaryExprNode(NOT, $2); }
 
 %%
 

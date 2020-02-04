@@ -3,10 +3,9 @@
 //
 // Main function for pascal compiler
 //
-// Author: Phil Howard 
+// Authors: Phil Howard, Cade McNiven
 // phil.howard@oit.edu
-//
-// Date: Jan. 18, 2016
+// cade.mcniven@oit.edu
 //
 
 #include <stdio.h>

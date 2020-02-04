@@ -38,7 +38,7 @@ extern cSymbolTable g_symbolTable;
 %option yylineno
 
         /* definitions go here. PUNCTUATION is an example. */
-PUNCTUATION                  [()\[\];,.+\-*/=^<>]
+PUNCTUATION                  [:()\[\];,.+\-*/=^<>]
 IDENTIFIER                   [a-zA-Z][a-zA-Z0-9]*
 
 %%
@@ -50,6 +50,10 @@ IDENTIFIER                   [a-zA-Z][a-zA-Z0-9]*
                             DO_RETURN(INT_VAL);}
 [0-9]+\.[0-9]+         {    yylval.real_val = std::atof(yytext);
                             DO_RETURN(REAL_VAL);}
+":="                   DO_RETURN(ASSIGN);
+">="                   DO_RETURN(GE);
+"<="                   DO_RETURN(LE);
+"<>"                   DO_RETURN(NOT_EQUAL);
 {PUNCTUATION}          DO_RETURN(yytext[0]);
 [ \n\t\r]
 .                      DO_RETURN(JUNK_TOKEN);
@@ -86,6 +90,8 @@ int ProcessIdentifier()
     string name = ToLower(yytext);
 
     cSymbol * symbol = g_symbolTable.LookupSymbol(name);
+    yylval.symbol = symbol;
+
     if (symbol != nullptr)
         return symbol->GetTokenType();
 

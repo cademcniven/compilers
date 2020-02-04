@@ -29,11 +29,35 @@ class cSymbol : public cAstNode
             {
                 m_id = ++nextId;
                 m_tokenType = IDENTIFIER;
+                m_size = 0;
+                m_isFloat = false;
             }
             else
             {
-                m_id = id;
+                m_id = TYPE_ID;
                 m_tokenType = id;
+                
+                //if we're inserting the keyword "char"
+                if (id == 1)
+                {
+                    m_size = 1;
+                    m_isFloat = false;
+                    m_tokenType = TYPE_ID;
+                }
+                //if we're inserting the keyword "integer"
+                else if (id == 2)
+                {
+                    m_size = 4;
+                    m_isFloat = false;
+                    m_tokenType = TYPE_ID;
+                }
+                //if we're inserting the keyword "real"
+                else if (id == 3)
+                {
+                    m_size = 8;
+                    m_isFloat = true;
+                    m_tokenType = TYPE_ID;
+                }
             }
         }
 
@@ -41,6 +65,10 @@ class cSymbol : public cAstNode
         string GetName() { return m_name; }
 
         int GetTokenType() { return m_tokenType; }
+
+        int GetSize() { return m_size; }
+
+        bool IsFloat() { return m_isFloat; }
 
         virtual string AttributesToString()
         {
@@ -57,4 +85,6 @@ class cSymbol : public cAstNode
         long long m_id;             // ID for this cSymbol
         string m_name;              // name for this cSymbol
         int m_tokenType;
+        int m_size;
+        bool m_isFloat;
 };
