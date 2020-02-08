@@ -30,6 +30,7 @@ class cNilNode;
 class cOpNode;
 class cProcCallNode;
 class cProcDeclNode;
+class cProcDeclsNode;
 class cProgramNode;
 class cRangeDeclNode;
 class cRealExprNode;
@@ -75,6 +76,7 @@ class cVisitor
         virtual void Visit(cOpNode *node);
         virtual void Visit(cProcCallNode *node);
         virtual void Visit(cProcDeclNode *node);
+        virtual void Visit(cProcDeclsNode *node);
         virtual void Visit(cProgramNode *node);
         virtual void Visit(cRangeDeclNode *node);
         virtual void Visit(cRealExprNode *node);

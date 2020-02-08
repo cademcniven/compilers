@@ -66,6 +66,8 @@ class cSymbol : public cAstNode
 
         int GetTokenType() { return m_tokenType; }
 
+        void SetTokenType(int type) { m_tokenType = type; }
+
         int GetSize() { return m_size; }
 
         bool IsFloat() { return m_isFloat; }

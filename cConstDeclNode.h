@@ -1,8 +1,8 @@
 #pragma once
 //**************************************
-// cVarDeclNode.h
+// cConstDeclNode.h
 //
-// Defines an AST node for variable declarations
+// Defines an AST node for const declarations
 //
 // Author: Cade McNiven
 // cade.mcniven@oit.edu
@@ -10,19 +10,13 @@
 
 #include "cAstNode.h"
 #include "cDeclNode.h"
-#include "cBaseTypeNode.h"
-#include "cSymbolTable.h"
+#include "cExprNode.h"
 
-extern cSymbolTable g_symbolTable;
-
-class cVarDeclNode : public cDeclNode
+class cConstDeclNode : public cDeclNode
 {
     public:
-        cVarDeclNode(cSymbol * identifier, cSymbol * type) : cDeclNode()
+        cConstDeclNode(cSymbol * identifier, cExprNode * expr) : cDeclNode()
         {
-            AddChild(new cBaseTypeNode(type->GetName(), 
-                type->GetSize(), type->IsFloat()));
-            
             cSymbol * symbol = g_symbolTable.LookupSymbol(identifier->GetName());
             
             if (symbol != nullptr)
@@ -32,8 +26,10 @@ class cVarDeclNode : public cDeclNode
 
             AddChild(symbol);
             g_symbolTable.InsertSymbol(symbol);
+
+            AddChild(expr);
         }
 
-        virtual string NodeType() { return string("var_decl"); }
+        virtual string NodeType() { return string("const_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

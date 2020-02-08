@@ -69,34 +69,21 @@ int Return(int val)
 }
 
 //*************************************************************
-cSymbol *  Insert(string name)
-{
-    name = ToLower(name);
-
-    cSymbol * symbol = g_symbolTable.LookupSymbolLocal(name);
-    
-    if (symbol == nullptr)
-    {
-        symbol = new cSymbol(name, -1);
-        g_symbolTable.InsertSymbol(symbol);
-    }
-
-    return symbol;
-}
-
-//*************************************************************
 int ProcessIdentifier()
 {
     string name = ToLower(yytext);
 
     cSymbol * symbol = g_symbolTable.LookupSymbol(name);
+
+    if (symbol == nullptr)
+        symbol = new cSymbol(name, -1);
+
     yylval.symbol = symbol;
 
-    if (symbol != nullptr)
+    if (symbol->GetTokenType() != IDENTIFIER)
         return symbol->GetTokenType();
-
-    yylval.symbol = Insert(yytext);
-    return IDENTIFIER;
+    else
+        return IDENTIFIER;
 }
 
 //*************************************************************
