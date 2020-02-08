@@ -14,6 +14,7 @@
 #include "cAstNode.h"
 #include "cExprNode.h"
 #include "cSymbol.h"
+#include "cExprListNode.h"
 
 class cVarExprNode : public cExprNode
 {
@@ -24,8 +25,10 @@ class cVarExprNode : public cExprNode
             AddChild(value);
         }
 
+        void AddExprList(cExprListNode * exprList) { AddChild(exprList); }
+
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
     protected:
-        cSymbol* m_value;        // value of integer constant (literal)
+        cSymbol* m_value;
 };

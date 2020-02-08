@@ -1,8 +1,8 @@
 #pragma once
 //**************************************
-// cFuncDecl.h
+// cArrayDeclNode.h
 //
-// Defines an AST node for function declarations
+// Defines an AST node for array declarations
 //
 // Author: Cade McNiven
 // cade.mcniven@oit.edu
@@ -10,37 +10,35 @@
 
 #include "cAstNode.h"
 #include "cDeclNode.h"
+#include "cDeclsNode.h"
+#include "cBaseTypeNode.h"
 #include "cSymbolTable.h"
-#include "cProcDeclNode.h"
 
 extern cSymbolTable g_symbolTable;
 
-class cFuncDeclNode : public cDeclNode
+class cArrayDeclNode : public cDeclNode
 {
     public:
-        cFuncDeclNode(cSymbol * header) : cDeclNode()
+        cArrayDeclNode(cSymbol * name, cSymbol * type, 
+            cDeclsNode * ranges) : cDeclNode()
         {
-            cSymbol * symbol = g_symbolTable.LookupSymbol(header->GetName());
+            cSymbol * symbol = g_symbolTable.LookupSymbol(name->GetName());
 
             if (symbol != nullptr)
                 symbol = new cSymbol(symbol->GetName(), -1);
             else
-                symbol = header;
-            
+                symbol = name;
+           
+            symbol->SetTokenType(TYPE_ID);
             symbol->SetDecl(this);
             g_symbolTable.InsertSymbol(symbol);
 
             AddChild(symbol);
-        }
-
-        void AddParams(cVarDeclsNode * params) { AddChild(params); }
-        void AddBlock(cBlockNode * block) { AddChild(block); }
-        void AddType(cSymbol * type)
-        {
             AddChild(new cBaseTypeNode(type->GetName(),
                 type->GetSize(), type->IsFloat()));
+            AddChild(ranges);
         }
 
-        virtual string NodeType() { return string("func"); }
+        virtual string NodeType() { return string("array"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

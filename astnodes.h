@@ -40,3 +40,5 @@
 #include "cFuncDeclNode.h"
 #include "cConstDeclNode.h"
 #include "cFuncExprNode.h"
+#include "cRangeDeclNode.h"
+#include "cArrayDeclNode.h"

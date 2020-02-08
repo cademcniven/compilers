@@ -20,9 +20,14 @@ class cVarDeclNode : public cDeclNode
     public:
         cVarDeclNode(cSymbol * identifier, cSymbol * type) : cDeclNode()
         {
-            AddChild(new cBaseTypeNode(type->GetName(), 
-                type->GetSize(), type->IsFloat()));
-            
+            if (type->GetDecl() != nullptr)
+                AddChild(type->GetDecl());
+            else
+            {
+                AddChild(new cBaseTypeNode(type->GetName(), 
+                    type->GetSize(), type->IsFloat()));
+            }
+
             cSymbol * symbol = g_symbolTable.LookupSymbol(identifier->GetName());
             
             if (symbol != nullptr)
@@ -30,8 +35,10 @@ class cVarDeclNode : public cDeclNode
             else
                 symbol = identifier;
 
-            AddChild(symbol);
+            symbol->SetDecl(this);
             g_symbolTable.InsertSymbol(symbol);
+
+            AddChild(symbol);
         }
 
         virtual string NodeType() { return string("var_decl"); }

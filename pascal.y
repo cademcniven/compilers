@@ -40,6 +40,8 @@ extern cSymbolTable g_symbolTable;
     cProcDeclNode*    procDecl_node;
     cFuncDeclNode*    funcDecl_node;
     cFuncExprNode*    funcExpr_node;
+    cRangeDeclNode*   rangeDecl_node;
+    cVarExprNode*     varExpr_node;
     }
 
 %{
@@ -83,11 +85,11 @@ extern cSymbolTable g_symbolTable;
 %type <decls_node> constdecls
 %type <decls_node> constdecl
 %type <expr_node> constant
-%type <ast_node> typedecls
-%type <ast_node> typedecl
-%type <ast_node> singleType
-%type <ast_node> rangeList
-%type <ast_node> range
+%type <decls_node> typedecls
+%type <decls_node> typedecl
+%type <decl_node> singleType
+%type <decls_node> rangeList
+%type <rangeDecl_node> range
 %type <varDecls_node> goodvar
 %type <varDecls_node> onevar
 %type <ast_node> recorddef
@@ -109,8 +111,8 @@ extern cSymbolTable g_symbolTable;
 %type <expr_node> addit
 %type <expr_node> term
 %type <expr_node> fact
-%type <symbol> variable
-%type <ast_node> varpart
+%type <varExpr_node> variable
+%type <symbol> varpart
 %type <exprList_node> exprList
 %type <ast_node> recHeader
 %%
@@ -140,6 +142,7 @@ decls: constdecls typedecls vardecls procdecls
                                   {
                                       $$ = new cDeclsNode(nullptr);
                                       $$->AddDecls($1);
+                                      $$->AddDecls($2);
                                       $$->AddDecls($3);
                                       $$->AddDecls($4);
                                   }
@@ -156,25 +159,29 @@ constdecl: constdecl ';' IDENTIFIER '=' constant
                                 { $$ = new cDeclsNode();
                                   $$->AddDecl(new cConstDeclNode($1, $3)); }
 typedecls: TYPE typedecl
-                                { }
+                                { $$ = $2; }
         | /*empty */
                                 { $$ = nullptr; }
 typedecl: typedecl singleType
-                                { }
+                                { $$ = $1;
+                                  $$->AddDecl($2); }
         |  singleType
-                                { }
+                                { $$ = new cDeclsNode();
+                                  $$->AddDecl($1); }
         |  error ';'
                                 {}
 singleType:  IDENTIFIER '=' recHeader recorddef ';'
                                 { }
         | IDENTIFIER '=' ARRAY '[' rangeList ']' OF type ';'
-                                { }
+                                { $$ = new cArrayDeclNode($1, $8, $5);  }
 rangeList: rangeList ',' range
-                                { }
+                                { $$ = $1;
+                                  $$->AddDecl($3); }
         |  range
-                                { }
+                                { $$ = new cDeclsNode();
+                                  $$->AddDecl($1); }
 range: INT_VAL '.' '.' INT_VAL
-                                { }
+                                { $$ = new cRangeDeclNode($1, $4);  }
 
 vardecls: VAR vardecl
                                 { $$ = $2; }
@@ -274,8 +281,7 @@ statements: statements statement
                                 { $$ = new cStmtsNode($1); }
 
 statement: variable ASSIGN expr ';'
-                                { $$ = new cAssignNode(
-                                    new cVarExprNode($1), $3); }
+                                { $$ = new cAssignNode($1, $3); }
     |   IF expr THEN statement
                                 { $$ = new cIfNode($2, $4); }
     |   IF expr THEN statement ELSE statement
@@ -317,12 +323,13 @@ func_call:  IDENTIFIER '(' exprList ')'
 variable: variable '.' varpart
                                 { }
         | variable '[' exprList ']'
-                                { }
+                                { $$ = $1;
+                                  $$->AddExprList($3); }
         | varpart
-                                {  }
+                                { $$ = new cVarExprNode($1); }
 
 varpart:  IDENTIFIER
-                                { }
+                                { $$ = $1; }
 
 expr:       expr '=' addit
                                 { $$ = new cBinaryExprNode($1, '=', $3); }
@@ -370,7 +377,7 @@ fact:        '(' expr ')'
         |   REAL_VAL
                                 { $$ = new cRealExprNode($1);  }
         |   variable
-                                { $$ = new cVarExprNode($1); }
+                                { $$ = $1; }
         |   func_call
                                 { $$ = $1; }
         |   NOT fact

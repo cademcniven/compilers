@@ -15,14 +15,17 @@
 #include <utility>
 #include "cAstNode.h"
 #include "pascalparse.h"
+#include "cDeclNode.h"
 
 using std::string;
 
 class cSymbol : public cAstNode
 {
     public:
+        //TODO: fix this garbage
         cSymbol(string name, int id) : cAstNode()
         {
+            m_decl = nullptr;
             m_name = name;
 
             if (id == -1)
@@ -72,6 +75,10 @@ class cSymbol : public cAstNode
 
         bool IsFloat() { return m_isFloat; }
 
+        cDeclNode * GetDecl() { return m_decl; }
+
+        void SetDecl(cDeclNode * decl) { m_decl = decl; }
+
         virtual string AttributesToString()
         {
             string result(" id=\"");
@@ -81,7 +88,10 @@ class cSymbol : public cAstNode
         }
 
         virtual string NodeType() { return string("sym"); }
-        virtual void Visit(cVisitor * visitor) { visitor->Visit(this); }
+        virtual void Visit(cVisitor * visitor) 
+        { 
+            visitor->Visit(this); 
+        }
     protected:
         static long long nextId;    // used to generate unique IDs
         long long m_id;             // ID for this cSymbol
@@ -89,4 +99,5 @@ class cSymbol : public cAstNode
         int m_tokenType;
         int m_size;
         bool m_isFloat;
+        cDeclNode* m_decl;
 };

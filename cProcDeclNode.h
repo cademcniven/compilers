@@ -26,6 +26,7 @@ class cProcDeclNode : public cDeclNode
             else
                 symbol = header;
             
+            symbol->SetDecl(this);
             g_symbolTable.InsertSymbol(symbol);
 
             AddChild(symbol);
