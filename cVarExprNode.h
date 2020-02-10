@@ -27,6 +27,23 @@ class cVarExprNode : public cExprNode
 
         void AddExprList(cExprListNode * exprList) { AddChild(exprList); }
 
+        // sort of unsure if this was the correct solution to the problem.
+        // just doing AddChild would be in line with other similar objects,
+        // but it caused the ids to be wrong. Adding code like what's in 
+        // the decl nodes fixed the problem but may be incorrect.
+        void AddSymbol(cSymbol * identifier) 
+        { 
+            cSymbol * symbol = g_symbolTable.LookupSymbol(identifier->GetName());
+
+            if (symbol != nullptr)
+                symbol = new cSymbol(symbol->GetName(), -1);
+            else
+                symbol = identifier;
+
+            g_symbolTable.InsertSymbol(symbol);
+            AddChild(symbol); 
+        }
+
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
     protected:

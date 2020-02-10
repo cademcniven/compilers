@@ -42,3 +42,4 @@
 #include "cFuncExprNode.h"
 #include "cRangeDeclNode.h"
 #include "cArrayDeclNode.h"
+#include "cRecordDeclNode.h"
