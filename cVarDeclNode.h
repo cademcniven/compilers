@@ -20,13 +20,7 @@ class cVarDeclNode : public cDeclNode
     public:
         cVarDeclNode(cSymbol * identifier, cSymbol * type) : cDeclNode()
         {
-            if (type->GetDecl() != nullptr)
-                AddChild(type->GetDecl());
-            else
-            {
-                AddChild(new cBaseTypeNode(type->GetName(), 
-                    type->GetSize(), type->IsFloat()));
-            }
+            AddChild(type->GetDecl());
 
             cSymbol * symbol = g_symbolTable.LookupSymbol(identifier->GetName());
             

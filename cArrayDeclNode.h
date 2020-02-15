@@ -34,8 +34,7 @@ class cArrayDeclNode : public cDeclNode
             g_symbolTable.InsertSymbol(symbol);
 
             AddChild(symbol);
-            AddChild(new cBaseTypeNode(type->GetName(),
-                type->GetSize(), type->IsFloat()));
+            AddChild(type->GetDecl());
             AddChild(ranges);
         }
 

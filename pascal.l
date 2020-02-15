@@ -80,10 +80,7 @@ int ProcessIdentifier()
 
     yylval.symbol = symbol;
 
-    if (symbol->GetTokenType() != IDENTIFIER)
-        return symbol->GetTokenType();
-    else
-        return IDENTIFIER;
+    return symbol->GetTokenType();
 }
 
 //*************************************************************

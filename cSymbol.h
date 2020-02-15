@@ -22,45 +22,21 @@ using std::string;
 class cSymbol : public cAstNode
 {
     public:
-        //TODO: fix this garbage
         cSymbol(string name, int id) : cAstNode()
         {
             m_decl = nullptr;
             m_name = name;
+            m_isType = false;
 
             if (id == -1)
             {
                 m_id = ++nextId;
                 m_tokenType = IDENTIFIER;
-                m_size = 0;
-                m_isFloat = false;
             }
             else
             {
                 m_id = TYPE_ID;
                 m_tokenType = id;
-                
-                //if we're inserting the keyword "char"
-                if (id == 1)
-                {
-                    m_size = 1;
-                    m_isFloat = false;
-                    m_tokenType = TYPE_ID;
-                }
-                //if we're inserting the keyword "integer"
-                else if (id == 2)
-                {
-                    m_size = 4;
-                    m_isFloat = false;
-                    m_tokenType = TYPE_ID;
-                }
-                //if we're inserting the keyword "real"
-                else if (id == 3)
-                {
-                    m_size = 8;
-                    m_isFloat = true;
-                    m_tokenType = TYPE_ID;
-                }
             }
         }
 
@@ -68,16 +44,16 @@ class cSymbol : public cAstNode
         string GetName() { return m_name; }
 
         int GetTokenType() { return m_tokenType; }
-
         void SetTokenType(int type) { m_tokenType = type; }
-
-        int GetSize() { return m_size; }
-
-        bool IsFloat() { return m_isFloat; }
+        bool IsType() { return m_isType; }
 
         cDeclNode * GetDecl() { return m_decl; }
-
-        void SetDecl(cDeclNode * decl) { m_decl = decl; }
+        void SetDecl(cDeclNode * decl) 
+        { 
+            m_decl = decl; 
+            m_isType = decl->IsType();
+            if (m_isType) m_tokenType = TYPE_ID;
+        }
 
         virtual string AttributesToString()
         {
@@ -96,8 +72,7 @@ class cSymbol : public cAstNode
         static long long nextId;    // used to generate unique IDs
         long long m_id;             // ID for this cSymbol
         string m_name;              // name for this cSymbol
+        bool m_isType;
         int m_tokenType;
-        int m_size;
-        bool m_isFloat;
         cDeclNode* m_decl;
 };

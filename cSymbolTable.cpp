@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include "cSymbolTable.h"
+#include "cBaseTypeNode.h"
 
 //*********************************************************************
 void cSymbolTable::IncreaseScope()
@@ -72,14 +73,21 @@ void cSymbolTable::InsertKeywords()
         return;
 
     IncreaseScope();
+    
+    cBaseTypeNode * charType = new cBaseTypeNode("char", 1, false);
+    cBaseTypeNode * intType = new cBaseTypeNode("integer", 4, false);
+    cBaseTypeNode * realType = new cBaseTypeNode("real", 8, true);
 
     cSymbol * keyword = new cSymbol("char", 1);
+    keyword->SetDecl(charType);
     InsertSymbol(keyword);
 
     keyword = new cSymbol("integer", 2);
+    keyword->SetDecl(intType);
     InsertSymbol(keyword);
 
     keyword = new cSymbol("real", 3);
+    keyword->SetDecl(realType);
     InsertSymbol(keyword);
 
     keyword = new cSymbol("begin", OPEN);

@@ -8,27 +8,27 @@
 // cade.mcniven@oit.edu
 //
 
-#include <list>
+#include "cAstNode.h"
 #include "cSymbol.h"
 
-using std::list;
-
-class cIdListNode
+class cIdListNode : cAstNode
 {
     public:
         // param is first actual param passed to function
-        cIdListNode(cSymbol *param = nullptr)
+        cIdListNode(cSymbol *param = nullptr) : cAstNode()
         {
-            if (param != nullptr) m_symbols.push_back(param);
+            if (param != nullptr) AddChild(param);
         }
 
         void AddId(cSymbol *node) 
         {
             if (node != nullptr)
-                m_symbols.push_back(node);
+                AddChild(node);
         }
+       
+        int NumIds() { return NumChildren(); }
 
-        list<cSymbol*> GetIds() { return m_symbols; }
-    protected:
-        list<cSymbol*> m_symbols;
+        cSymbol * GetId(int index) { return dynamic_cast<cSymbol*>(GetChild(index)); }
+        virtual string NodeType() { return "IdList"; }
+        virtual void Visit(cVisitor * visitor) { }
 };

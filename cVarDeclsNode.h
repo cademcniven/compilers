@@ -8,12 +8,9 @@
 // cade.mcniven
 //
 
-#include <list>
 #include "cDeclsNode.h"
 #include "cVarDeclNode.h"
 #include "cIdListNode.h"
-
-using std::list;
 
 class cVarDeclsNode : public cDeclsNode
 {
@@ -22,9 +19,10 @@ class cVarDeclsNode : public cDeclsNode
         cVarDeclsNode(cIdListNode *param, cSymbol * type)
             : cDeclsNode()
         {
-            auto nodes = param->GetIds();
-            for (auto& i : nodes)
-                AddChild(new cVarDeclNode(i, type));
+            for (int i = 0; i < param->NumIds(); ++i)
+            {
+                AddChild(new cVarDeclNode(param->GetId(i), type));
+            }
         }
 
         void AddDecl(cVarDeclNode *node) { AddChild(node); }

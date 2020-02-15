@@ -37,8 +37,7 @@ class cFuncDeclNode : public cDeclNode
         void AddBlock(cBlockNode * block) { AddChild(block); }
         void AddType(cSymbol * type)
         {
-            AddChild(new cBaseTypeNode(type->GetName(),
-                type->GetSize(), type->IsFloat()));
+            AddChild(type->GetDecl());
         }
 
         virtual string NodeType() { return string("func"); }
