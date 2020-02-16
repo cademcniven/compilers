@@ -41,17 +41,8 @@ class cFuncDeclNode : public cDeclNode
                     m_prevDecl = 
                         dynamic_cast<cFuncDeclNode*>(localSymbol->GetDecl());
 
-                    if (!m_prevDecl->GetIsForward())
-                    {
-                        string error = "Symbol ";
-                        error += header->GetName();
-                        error += " already exists in current scope";
-                        SemanticParseError(error);
-                    }
-                    else
-                    {
+                    if (m_prevDecl->GetIsForward())
                         hasProto = true;
-                    }
                 }
             }
 
@@ -90,7 +81,19 @@ class cFuncDeclNode : public cDeclNode
 
         void AddBlock(cBlockNode * block) 
         { 
-            AddChild(block); 
+            if (m_prevDecl != nullptr)
+            {
+                if (m_prevDecl->GetBlock() != nullptr)
+                {
+                    string error = m_name;
+                    error += " already has a definition";
+                    SemanticParseError(error);
+                }
+                else
+                    AddChild(block);
+            }
+            else
+                AddChild(block); 
         }
         cBlockNode * GetBlock() { return dynamic_cast<cBlockNode*>(GetChild(3)); }
 
