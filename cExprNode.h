@@ -7,8 +7,9 @@
 // This is a pure virtual class because there is no definition for
 // cAstNode::NodeType()
 //
-// Author: Phil Howard 
+// Authors: Phil Howard, Cade McNiven
 // phil.howard@oit.edu
+// cade.mcniven@oit.edu
 //
 
 #include "cStmtNode.h"
@@ -17,4 +18,5 @@ class cExprNode : public cStmtNode
 {
     public:
         cExprNode() : cStmtNode() {}
+        virtual cDeclNode * GetType() = 0;
 };

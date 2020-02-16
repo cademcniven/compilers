@@ -19,8 +19,14 @@ class cUnaryExprNode : public cExprNode
         {
             AddChild(new cOpNode(op));
             AddChild(rhs);
+
+            m_expr = rhs;
         }
 
         virtual string NodeType() { return string("unaryExpr"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual cDeclNode * GetType() { return m_expr->GetType(); }
+
+    private:
+        cExprNode * m_expr;
 };

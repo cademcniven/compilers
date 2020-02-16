@@ -28,6 +28,11 @@ class cRealExprNode : public cExprNode
         }
         virtual string NodeType() { return string("REAL"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual cDeclNode * GetType()
+        {
+            //real is guaranteed to be in the symbol table
+            return g_symbolTable.LookupSymbol("real")->GetDecl();
+        }
     protected:
         float m_value;        // value of real constant (literal)
 };

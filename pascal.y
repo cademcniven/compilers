@@ -12,7 +12,10 @@
 #include "lex.h"
 #include "astnodes.h"
 
-extern cSymbolTable g_symbolTable;
+#define CHECK_ERROR() { if (g_semanticErrorHappened) \
+        { g_semanticErrorHappened = false; }}
+#define PROP_ERROR() { if (g_semanticErrorHappened) \
+        { g_semanticErrorHappened = false; YYERROR; }}
 
 %}
 
@@ -47,6 +50,8 @@ extern cSymbolTable g_symbolTable;
 
 %{
     int yyerror(const char *msg);
+    extern cSymbolTable g_symbolTable;
+    static bool g_semanticErrorHappened = false;
     cAstNode *yyast_root;
 %}
 
@@ -197,18 +202,18 @@ vardecls: VAR vardecl
                                 { $$ = nullptr; }
 vardecl: vardecl onevar
                                 { $$ = $1;
-                                  $$->AddDecls($2); 
+                                  $$->AddDecls($2); CHECK_ERROR();
                                 }
         | onevar
                                 { $$ = new cVarDeclsNode();
-                                  $$->AddDecls($1); 
+                                  $$->AddDecls($1); CHECK_ERROR();
                                 }
 onevar: goodvar ';'
                                 { $$ = $1; }
         | error ';'
                                 { }
 goodvar: idlist ':' type
-                                { $$ = new cVarDeclsNode($1, $3); }
+                                { $$ = new cVarDeclsNode($1, $3); CHECK_ERROR(); }
 procdecls: procdecls procdecl
                                 { if ($1 == nullptr)
                                     $$ = new cProcDeclsNode();
@@ -237,6 +242,7 @@ procdecl: procHeader paramSpec ';' block ';'
                                 }
         |  funcProto ';' FORWARD ';'
                                 { $$ = $1;
+                                  dynamic_cast<cFuncDeclNode*>($$)->SetIsForward(true);
                                   g_symbolTable.DecreaseScope(); 
                                 }
         |  error ';' block ';'
@@ -248,13 +254,13 @@ procHeader: PROCEDURE IDENTIFIER
                                   g_symbolTable.IncreaseScope();
                                 }
 funcHeader: FUNCTION IDENTIFIER
-                                { $$ = new cFuncDeclNode($2);
+                                { $$ = new cFuncDeclNode($2); CHECK_ERROR();
                                   g_symbolTable.IncreaseScope();
                                 }
 funcProto: funcHeader paramSpec ':' type
                                 { $$ = $1;
-                                  $$->AddType($4);
-                                  $$->AddParams($2);
+                                  $$->AddType($4); PROP_ERROR();
+                                  $$->AddParams($2); PROP_ERROR();
                                 }
 paramSpec: '(' parlist ')'
                                 { $$ = $2; }
@@ -414,4 +420,13 @@ int yyerror(const char *msg)
         << yytext << " on line " << yylineno << "\n";
 
     return 0;
+}
+
+// Function that gets called when a semantic error happens
+void SemanticParseError(std::string error)
+{
+    std::cout << "ERROR: " << error << " on line "
+              << yylineno << "\n";
+    g_semanticErrorHappened = true;
+    yynerrs++;
 }

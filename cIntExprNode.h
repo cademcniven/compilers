@@ -29,6 +29,11 @@ class cIntExprNode : public cExprNode
         }
         virtual string NodeType() { return string("INTEGER"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual cDeclNode * GetType()
+        {
+            //integer is guaranteed to be in the symbol table.
+            return g_symbolTable.LookupSymbol("integer")->GetDecl();
+        }
     protected:
         int m_value;        // value of integer constant (literal)
 };

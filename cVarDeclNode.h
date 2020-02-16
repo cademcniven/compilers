@@ -20,8 +20,17 @@ class cVarDeclNode : public cDeclNode
     public:
         cVarDeclNode(cSymbol * identifier, cSymbol * type) : cDeclNode()
         {
-            AddChild(type->GetDecl());
+            if (g_symbolTable.LookupSymbolLocal(identifier->GetName()) != nullptr)
+            {
+                string error = "Symbol ";
+                error += identifier->GetName();
+                error += " already exists in current scope";
 
+                SemanticParseError(error);
+            }
+
+            AddChild(type->GetDecl());
+            
             cSymbol * symbol = g_symbolTable.LookupSymbol(identifier->GetName());
             
             if (symbol != nullptr)

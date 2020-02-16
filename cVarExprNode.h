@@ -46,6 +46,7 @@ class cVarExprNode : public cExprNode
 
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual cDeclNode * GetType() { return m_value->GetDecl(); }
     protected:
         cSymbol* m_value;
 };

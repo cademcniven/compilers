@@ -27,6 +27,8 @@ class cConstDeclNode : public cDeclNode
             AddChild(symbol);
             g_symbolTable.InsertSymbol(symbol);
 
+            symbol->SetDecl(this);
+
             AddChild(expr);
         }
 
