@@ -29,6 +29,8 @@ class cFuncDeclNode : public cDeclNode
             //was a forward declaration or not
             if (localSymbol != nullptr)
             {
+                //if there's a variable or constant with the same name,
+                //throw an error
                 if (!localSymbol->GetDecl()->IsFunc())
                 {
                     string error = "Symbol ";
@@ -36,6 +38,7 @@ class cFuncDeclNode : public cDeclNode
                     error += " already exists in current scope";
                     SemanticParseError(error);
                 }
+                //there's another funcdecl with the same name
                 else
                 {
                     m_prevDecl = 
@@ -46,6 +49,7 @@ class cFuncDeclNode : public cDeclNode
                 }
             }
 
+            //non error-handling stuff
             cSymbol * symbol = g_symbolTable.LookupSymbol(header->GetName());
 
             if (symbol != nullptr && !hasProto)
@@ -60,60 +64,69 @@ class cFuncDeclNode : public cDeclNode
             m_name = symbol->GetName();
         }
 
+        //********************************************************************
         void AddParams(cVarDeclsNode * params) 
         { 
-            if (m_prevDecl != nullptr)
+            if (m_prevDecl != nullptr && m_prevDecl->NumParams() != params->NumDecls())
             {
-                if (m_prevDecl->NumParams() != params->NumDecls())
-                {
-                    string error = m_name;
-                    error += " redeclared with a different number of parameters";
-                    SemanticParseError(error);
-                }
-                else
-                    AddChild(params);
+                string error = m_name;
+                error += " redeclared with a different number of parameters";
+                SemanticParseError(error);
             }
             else
                 AddChild(params); 
         }
-        cVarDeclsNode * GetParams() { return dynamic_cast<cVarDeclsNode*>(GetChild(2)); }
-        int NumParams() { return dynamic_cast<cVarDeclsNode*>(GetChild(2))->NumDecls(); }
 
+        //********************************************************************
+        cVarDeclsNode * GetParams() 
+        { 
+            return dynamic_cast<cVarDeclsNode*>(GetChild(2)); 
+        
+        }
+
+        //********************************************************************
+        int NumParams() 
+        { 
+            return dynamic_cast<cVarDeclsNode*>(GetChild(2))->NumDecls(); 
+        }
+
+        //********************************************************************
         void AddBlock(cBlockNode * block) 
         { 
-            if (m_prevDecl != nullptr)
+            if (m_prevDecl != nullptr && m_prevDecl->GetBlock() != nullptr)
             {
-                if (m_prevDecl->GetBlock() != nullptr)
-                {
-                    string error = m_name;
-                    error += " already has a definition";
-                    SemanticParseError(error);
-                }
-                else
-                    AddChild(block);
+                string error = m_name;
+                error += " already has a definition";
+                SemanticParseError(error);
             }
             else
                 AddChild(block); 
         }
-        cBlockNode * GetBlock() { return dynamic_cast<cBlockNode*>(GetChild(3)); }
 
+        //********************************************************************
+        cBlockNode * GetBlock() 
+        { 
+            return dynamic_cast<cBlockNode*>(GetChild(3)); 
+        }
+
+        //********************************************************************
         void AddType(cSymbol * type) 
         {
-            if (m_prevDecl != nullptr)
+            if (m_prevDecl != nullptr && m_prevDecl->GetType() != type->GetDecl())
             {
-                if (m_prevDecl->GetType() != type->GetDecl())
-                {
-                 string error = m_name;
-                 error += " previously declared with different return type";
-                 SemanticParseError(error);   
-                }
-                else
-                    AddChild(type->GetDecl());
+                string error = m_name;
+                error += " previously declared with different return type";
+                SemanticParseError(error);   
             }
             else
                 AddChild(type->GetDecl()); 
         }
-        cDeclNode * GetType() { return dynamic_cast<cDeclNode*>(GetChild(1)); }
+
+        //********************************************************************
+        cDeclNode * GetType() 
+        { 
+            return dynamic_cast<cDeclNode*>(GetChild(1)); 
+        }
 
         void SetIsForward(bool forward) { m_isForward = forward; }
         bool GetIsForward() { return m_isForward; }
