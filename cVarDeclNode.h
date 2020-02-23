@@ -50,6 +50,11 @@ class cVarDeclNode : public cDeclNode
         virtual string GetTypeName() { return "var"; }
         cDeclNode * GetType()
         {
-            return dynamic_cast<cDeclNode*>(GetChild(0));
+            cDeclNode * type = dynamic_cast<cDeclNode*>(GetChild(0));
+
+            if (type->IsVar())
+                return dynamic_cast<cVarDeclNode*>(type)->GetType();
+            
+            return type;
         }
 };

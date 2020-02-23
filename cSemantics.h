@@ -100,12 +100,20 @@ class cSemantics : public cVisitor
             }
             else if (lhsType->IsChar())
             {
+                //if the rhs is an int, check the value of it to see if it can be
+                //interpreted as a char
                 bool intIsChar = false;
                 if (rhsType->IsInt())
                 {
-                    int value = dynamic_cast<cIntExprNode*>(node->GetRhs())->GetValue();
-                    if (value <= 127 && value >= -128)
-                        intIsChar = true;
+                    cIntExprNode * intval = dynamic_cast<cIntExprNode*>(node->GetRhs());
+
+                    if (intval != nullptr)
+                    {
+                        int value = 
+                            dynamic_cast<cIntExprNode*>(node->GetRhs())->GetValue();
+                        if (value <= 127 && value >= -128)
+                            intIsChar = true;
+                    }
                 }
 
                 if (!rhsType->IsChar() && !intIsChar)
