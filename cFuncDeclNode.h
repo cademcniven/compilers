@@ -67,9 +67,6 @@ class cFuncDeclNode : public cDeclNode
         //********************************************************************
         void AddParams(cVarDeclsNode * params) 
         { 
-            if (params == nullptr)
-                return;
-
             if (m_prevDecl != nullptr && m_prevDecl->NumParams() != params->NumDecls())
             {
                 string error = m_name;
