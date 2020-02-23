@@ -12,7 +12,7 @@ OBJS=main.o \
 	 pascallex.o \
 	 pascalparse.o \
 	 cVisitor.o \
-	 cSymbolTable.o
+	 cSymbolTable.o 
 
 all: pascal
 

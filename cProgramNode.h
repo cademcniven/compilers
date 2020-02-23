@@ -22,13 +22,6 @@ class cProgramNode : public cAstNode
         // param is the block that makes up the program
         cProgramNode(cSymbol *name, cBlockNode *block) : cAstNode()
         {
-            /*cSymbol * symbol = g_symbolTable.LookupSymbol(name->GetName());
-            if (symbol == nullptr)
-            {
-                symbol = new cSymbol(name->GetName(), PROGRAM);
-                g_symbolTable.InsertSymbol(symbol);
-            }*/
-
             AddChild(name);
             AddChild(block);
         }

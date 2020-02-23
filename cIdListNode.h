@@ -11,7 +11,7 @@
 #include "cAstNode.h"
 #include "cSymbol.h"
 
-class cIdListNode : cAstNode
+class cIdListNode : public cAstNode
 {
     public:
         // param is first actual param passed to function
@@ -30,5 +30,5 @@ class cIdListNode : cAstNode
 
         cSymbol * GetId(int index) { return dynamic_cast<cSymbol*>(GetChild(index)); }
         virtual string NodeType() { return "IdList"; }
-        virtual void Visit(cVisitor * visitor) { }
+        virtual void Visit(cVisitor * visitor) { visitor->Visit(this); }
 };

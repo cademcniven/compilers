@@ -29,4 +29,9 @@ class cFuncExprNode : public cExprNode
         { 
             return dynamic_cast<cSymbol*>(GetChild(0))->GetDecl(); 
         }
+
+        string GetName()
+        {
+            return dynamic_cast<cSymbol*>(GetChild(0))->GetName();
+        }
 };

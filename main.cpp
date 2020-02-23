@@ -3,9 +3,10 @@
 //
 // Main function for pascal compiler
 //
-// Authors: Phil Howard, Cade McNiven
+// Author: Phil Howard 
 // phil.howard@oit.edu
-// cade.mcniven@oit.edu
+//
+// Date: Jan. 18, 2016
 //
 
 #include <stdio.h>
@@ -16,6 +17,7 @@
 #include "lex.h"
 #include "astnodes.h"
 #include "pascalparse.h"
+#include "cSemantics.h"
 
 // define global variables
 cSymbolTable g_symbolTable;
@@ -60,9 +62,18 @@ int main(int argc, char **argv)
     result = yyparse();
     if (yyast_root != nullptr && result == 0 && yynerrs == 0)
     {
-        output << yyast_root->ToString() << std::endl;
-    } else {
-            output << yynerrs << " Errors in compile\n";
+        cSemantics *semantics = new cSemantics();
+        semantics->VisitAllNodes(yyast_root);
+
+        if (yynerrs == 0)
+        {
+            output << yyast_root->ToString() << std::endl;
+        }
+    }
+
+    if (yyast_root == nullptr || result != 0 || yynerrs != 0)
+    {
+        output << yynerrs << " Errors in compile\n";
     }
 
     if (result == 0 && yylex() != 0)
@@ -75,5 +86,5 @@ int main(int argc, char **argv)
     output.close();
     std::cout.rdbuf(cout_buf);
 
-    return result;
+    return result + yynerrs;
 }
