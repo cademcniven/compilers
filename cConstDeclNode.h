@@ -34,4 +34,5 @@ class cConstDeclNode : public cDeclNode
 
         virtual string NodeType() { return string("const_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual string GetTypeName() { return "const"; }
 };

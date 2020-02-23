@@ -28,6 +28,7 @@ class cRangeDeclNode : public cDeclNode
 
         virtual string NodeType() { return string("range"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual string GetTypeName() { return "range"; }
     private:
         int m_start;
         int m_end;

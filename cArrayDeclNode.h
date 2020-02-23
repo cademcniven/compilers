@@ -40,4 +40,5 @@ class cArrayDeclNode : public cDeclNode
 
         virtual string NodeType() { return string("array"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual string GetTypeName() { return "array"; }
 };

@@ -34,6 +34,8 @@ class cIntExprNode : public cExprNode
             //integer is guaranteed to be in the symbol table.
             return g_symbolTable.LookupSymbol("integer")->GetDecl();
         }
+
+        int GetValue() { return m_value; }
     protected:
         int m_value;        // value of integer constant (literal)
 };

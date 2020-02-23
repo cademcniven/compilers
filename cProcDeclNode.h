@@ -37,4 +37,5 @@ class cProcDeclNode : public cDeclNode
 
         virtual string NodeType() { return string("proc"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual string GetTypeName() { return "Procedure"; }
 };

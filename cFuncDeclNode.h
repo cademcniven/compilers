@@ -139,6 +139,7 @@ class cFuncDeclNode : public cDeclNode
         virtual string NodeType() { return string("func"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual bool IsFunc() { return true; }
+        virtual string GetTypeName() { return "function"; }
 
     private:
         bool m_isForward;

@@ -37,4 +37,5 @@ class cRecordDeclNode : public cDeclNode
 
         virtual string NodeType() { return string("record"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual string GetTypeName() { return "record"; }
 };

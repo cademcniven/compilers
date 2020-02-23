@@ -21,5 +21,7 @@ class cDeclNode : public cAstNode
         virtual bool IsChar() { return false; }
         virtual bool IsType() { return false; }
         virtual bool IsFunc() { return false; }
+        virtual bool IsVar() { return false; }
         virtual int GetSize() { return 0; }
+        virtual string GetTypeName() = 0;
 };
