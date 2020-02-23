@@ -14,6 +14,8 @@
 #include "cSymbol.h"
 #include "cExprListNode.h"
 
+extern cSymbolTable g_symbolTable;
+
 class cFuncExprNode : public cExprNode
 {
     public:

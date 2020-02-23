@@ -130,10 +130,18 @@ class cSemantics : public cVisitor
             {
 
             }
+            //this happens for user defined types
             else
             {
-                string error = "unexpected type";
-                node->SemanticError(error);
+                if (lhsType->GetTypeName() != rhsType->GetTypeName())
+                {
+                    string error = "Cannot assign ";
+                    error += rhsType->GetTypeName();
+                    error += " to ";
+                    error += lhsType->GetTypeName();
+
+                    node->SemanticError(error);
+                }
             }
         }
 };
