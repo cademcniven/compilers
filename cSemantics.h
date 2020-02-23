@@ -39,4 +39,17 @@ class cSemantics : public cVisitor
 
             node->VisitAllChildren(this);
         }
+
+        virtual void Visit(cVarExprNode * node)
+        {
+            if (node->GetType() == nullptr)
+            {
+                string error = "Variable ";
+                error += node->GetName();
+                error += " is not defined"; 
+                node->SemanticError(error);
+            }
+
+            node->VisitAllChildren(this);
+        }
 };
