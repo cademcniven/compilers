@@ -34,4 +34,11 @@ class cFuncExprNode : public cExprNode
         {
             return dynamic_cast<cSymbol*>(GetChild(0))->GetName();
         }
+
+        int NumArgs()
+        {
+            cExprListNode * args = dynamic_cast<cExprListNode*>(GetChild(1));
+            if (args == nullptr) return 0;
+            else return args->NumExprs();
+        }
 };

@@ -90,7 +90,9 @@ class cFuncDeclNode : public cDeclNode
         //********************************************************************
         int NumParams() 
         { 
-            return dynamic_cast<cVarDeclsNode*>(GetChild(2))->NumDecls(); 
+            cVarDeclsNode * decl = dynamic_cast<cVarDeclsNode*>(GetChild(2));
+            if (decl == nullptr) return 0;
+            else return decl->NumDecls();
         }
 
         //********************************************************************

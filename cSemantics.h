@@ -29,6 +29,13 @@ class cSemantics : public cVisitor
                 error += " is not fully defined";
                 node->SemanticError(error);
             }
+            else if (node->NumArgs() !=
+                     dynamic_cast<cFuncDeclNode*>(decl)->NumParams())
+            {
+                string error = node->GetName();
+                error += " called with wrong number of arguments";
+                node->SemanticError(error);
+            }
 
             node->VisitAllChildren(this);
         }
