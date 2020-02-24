@@ -70,7 +70,7 @@ class cFuncDeclNode : public cDeclNode
             if (m_prevDecl != nullptr && m_prevDecl->NumParams() != params->NumDecls())
             {
                 string error = m_name;
-                error += " redeclared with a different number of parameters";
+                error += " redeclared with different number of parameters";
                 SemanticParseError(error);
             }
             else
@@ -81,7 +81,12 @@ class cFuncDeclNode : public cDeclNode
         cVarDeclsNode * GetParams() 
         { 
             return dynamic_cast<cVarDeclsNode*>(GetChild(2)); 
-        
+        }
+
+        //********************************************************************
+        cVarDeclNode * GetParam(int index)
+        {
+            return dynamic_cast<cVarDeclsNode*>(GetChild(2))->GetDecl(index);
         }
 
         //********************************************************************
@@ -117,7 +122,7 @@ class cFuncDeclNode : public cDeclNode
             if (m_prevDecl != nullptr && m_prevDecl->GetType() != type->GetDecl())
             {
                 string error = m_name;
-                error += " previously declared with different return type";
+                error += " previsously declared with different return type";
                 SemanticParseError(error);   
             }
             else

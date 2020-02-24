@@ -36,7 +36,35 @@ class cSemantics : public cVisitor
                 error += " called with wrong number of arguments";
                 node->SemanticError(error);
             }
+            else
+            {
+                //check the types of each argument
+                int numArgs = node->NumArgs();
+                for (int i = 0; i < numArgs; ++i)
+                {
+                    cDeclNode * argType = node->GetArg(i)->GetType();
+                    cDeclNode * paramType = 
+                        dynamic_cast<cFuncDeclNode*>(node->GetType())->GetParam(i)->GetType();
+                    if (argType->IsVar())
+                        argType = dynamic_cast<cVarDeclNode*>(argType)->GetType();
+                    if (argType->IsFunc())
+                        argType = dynamic_cast<cFuncDeclNode*>(argType)->GetType();
+                    if (paramType->IsVar())
+                        paramType = dynamic_cast<cVarDeclNode*>(paramType)->GetType();
+                    if (paramType->IsFunc())
+                        paramType = dynamic_cast<cFuncDeclNode*>(paramType)->GetType();
 
+                    if (argType->GetTypeName() != paramType->GetTypeName())
+                    {
+                        string error = "Cannot assign ";
+                        error += argType->GetTypeName();
+                        error += " to ";
+                        error += paramType->GetTypeName();
+
+                        node->SemanticError(error);
+                    }
+                }
+            }
             node->VisitAllChildren(this);
         }
 
@@ -49,7 +77,16 @@ class cSemantics : public cVisitor
                 error += " is not defined"; 
                 node->SemanticError(error);
             }
-
+            //trying to dereference something that's not an array
+            else if (node->GetExprList() != nullptr)
+            {
+                if (!dynamic_cast<cVarDeclNode*>(node->GetType())->GetType()->IsArray())
+                {
+                    string error = node->GetName();
+                    error += " is not an array"; 
+                    node->SemanticError(error);
+                }
+            }
             node->VisitAllChildren(this);
         }
 
@@ -73,6 +110,12 @@ class cSemantics : public cVisitor
                 lhsType = dynamic_cast<cFuncDeclNode*>(lhsType)->GetType();
             if (rhsType->IsFunc())
                 rhsType = dynamic_cast<cFuncDeclNode*>(rhsType)->GetType();
+            if (lhsType->IsArray() 
+                && dynamic_cast<cVarExprNode*>(node->GetLhs())->GetExprList() != nullptr)
+                lhsType = dynamic_cast<cArrayDeclNode*>(lhsType)->GetElementType();
+            if (rhsType->IsArray()
+                && dynamic_cast<cVarExprNode*>(node->GetRhs())->GetExprList() != nullptr)
+                rhsType = dynamic_cast<cArrayDeclNode*>(rhsType)->GetElementType();
 
             if (lhsType->IsReal())
             {

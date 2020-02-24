@@ -27,6 +27,11 @@ class cVarExprNode : public cExprNode
 
         void AddExprList(cExprListNode * exprList) { AddChild(exprList); }
 
+        cExprListNode * GetExprList()
+        {
+            return dynamic_cast<cExprListNode*>(GetChild(1));
+        }
+
         // sort of unsure if this was the correct solution to the problem.
         // just doing AddChild would be in line with other similar objects,
         // but it caused the ids to be wrong. Adding code like what's in 
@@ -47,7 +52,7 @@ class cVarExprNode : public cExprNode
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual cDeclNode * GetType() { return m_value->GetDecl(); }
-
+        
         string GetName()
         {
             return dynamic_cast<cSymbol*>(GetChild(0))->GetName();

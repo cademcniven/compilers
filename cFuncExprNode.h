@@ -43,4 +43,9 @@ class cFuncExprNode : public cExprNode
             if (args == nullptr) return 0;
             else return args->NumExprs();
         }
+
+        cExprNode * GetArg(int index) 
+        { 
+            return dynamic_cast<cExprListNode*>(GetChild(1))->GetExpr(index);
+        }
 };

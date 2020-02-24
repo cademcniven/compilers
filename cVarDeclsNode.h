@@ -28,6 +28,7 @@ class cVarDeclsNode : public cDeclsNode
         void AddDecl(cVarDeclNode *node) { AddChild(node); }
         void AddDecls(cVarDeclsNode *decls) { AddAllChildren(decls); }
         int NumDecls() { return NumChildren(); }
+        cVarDeclNode * GetDecl(int index) { return dynamic_cast<cVarDeclNode*>(GetChild(index)); }
         virtual string NodeType() { return string("var_decls"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };
