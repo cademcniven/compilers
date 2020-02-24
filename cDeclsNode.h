@@ -26,6 +26,8 @@ class cDeclsNode : public cAstNode
         // Add another decl to the list
         void AddDecl(cDeclNode *decl) { AddChild(decl); }
 
+        int NumDecls() { return NumChildren(); }
+
         virtual string NodeType() { return string("decls"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

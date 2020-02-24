@@ -46,4 +46,9 @@ class cArrayDeclNode : public cDeclNode
         {
             return dynamic_cast<cDeclNode*>(GetChild(1));
         }
+
+        int NumRanges() 
+        {
+            return dynamic_cast<cDeclsNode*>(GetChild(2))->NumDecls();
+        }
 };

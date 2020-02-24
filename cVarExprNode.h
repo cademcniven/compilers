@@ -32,6 +32,8 @@ class cVarExprNode : public cExprNode
             return dynamic_cast<cExprListNode*>(GetChild(1));
         }
 
+        int NumExprs() { return GetExprList()->NumExprs(); }
+
         // sort of unsure if this was the correct solution to the problem.
         // just doing AddChild would be in line with other similar objects,
         // but it caused the ids to be wrong. Adding code like what's in 

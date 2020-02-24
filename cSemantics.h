@@ -77,13 +77,23 @@ class cSemantics : public cVisitor
                 error += " is not defined"; 
                 node->SemanticError(error);
             }
-            //trying to dereference something that's not an array
+            //array stuff
             else if (node->GetExprList() != nullptr)
             {
+                //trying to dereference something that's not an array
                 if (!dynamic_cast<cVarDeclNode*>(node->GetType())->GetType()->IsArray())
                 {
                     string error = node->GetName();
                     error += " is not an array"; 
+                    node->SemanticError(error);
+                }
+                //using the wrong number of indexes
+                else if (dynamic_cast<cArrayDeclNode*>
+                        (dynamic_cast<cVarDeclNode*>(node->GetType())->GetType())->NumRanges() 
+                        != node->NumExprs())
+                {
+                    string error = node->GetName();
+                    error += " does not have the correct number of indexes";
                     node->SemanticError(error);
                 }
             }
