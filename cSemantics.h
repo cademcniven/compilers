@@ -96,6 +96,26 @@ class cSemantics : public cVisitor
                     error += " does not have the correct number of indexes";
                     node->SemanticError(error);
                 }
+                else
+                {
+                    int numIndexes = node->NumExprs();
+                    for (int i = 0; i < numIndexes; ++i)
+                    {
+                        cDeclNode * type = node->GetExpr(i)->GetType();
+                        if (type->IsVar())
+                            type = dynamic_cast<cVarDeclNode*>(type)->GetType();
+                        if (type->IsFunc())
+                            type = dynamic_cast<cFuncDeclNode*>(type)->GetType();
+
+                        if (type->GetTypeName() != "integer")
+                        {
+                            string error = "Index of ";
+                            error += node->GetName();
+                            error += " is not an integer";
+                            node->SemanticError(error);
+                        }
+                    }
+                }
             }
             node->VisitAllChildren(this);
         }

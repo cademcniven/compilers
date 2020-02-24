@@ -32,6 +32,11 @@ class cVarExprNode : public cExprNode
             return dynamic_cast<cExprListNode*>(GetChild(1));
         }
 
+        cExprNode * GetExpr(int index)
+        {
+            return GetExprList()->GetExpr(index);
+        }
+
         int NumExprs() { return GetExprList()->NumExprs(); }
 
         // sort of unsure if this was the correct solution to the problem.
