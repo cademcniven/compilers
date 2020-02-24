@@ -135,7 +135,7 @@ class cFuncDeclNode : public cDeclNode
             return dynamic_cast<cDeclNode*>(GetChild(1)); 
         }
 
-        void SetIsForward(bool forward) { m_isForward = forward; }
+        virtual void SetIsForward(bool forward) { m_isForward = forward; }
         bool GetIsForward() { return m_isForward; }
 
         virtual string NodeType() { return string("func"); }

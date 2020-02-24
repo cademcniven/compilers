@@ -242,7 +242,7 @@ procdecl: procHeader paramSpec ';' block ';'
                                 }
         |  funcProto ';' FORWARD ';'
                                 { $$ = $1;
-                                  dynamic_cast<cFuncDeclNode*>($$)->SetIsForward(true);
+                                  $$->SetIsForward(true);
                                   g_symbolTable.DecreaseScope(); 
                                 }
         |  error ';' block ';'

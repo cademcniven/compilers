@@ -25,4 +25,5 @@ class cDeclNode : public cAstNode
         virtual bool IsArray() { return false; }
         virtual int GetSize() { return 0; }
         virtual string GetTypeName() = 0;
+        virtual void SetIsForward(bool forward) {}
 };
