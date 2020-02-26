@@ -10,7 +10,7 @@ class cSemantics : public cVisitor
 
         virtual void Visit(cFuncExprNode * node)
         {
-            cDeclNode * decl = node->GetType();
+            cDeclNode * decl = node->GetDecl();
             if (decl == nullptr)
             {
                 string error = node->GetName();
@@ -44,15 +44,7 @@ class cSemantics : public cVisitor
                 {
                     cDeclNode * argType = node->GetArg(i)->GetType();
                     cDeclNode * paramType = 
-                        dynamic_cast<cFuncDeclNode*>(node->GetType())->GetParam(i)->GetType();
-                    if (argType->IsVar())
-                        argType = dynamic_cast<cVarDeclNode*>(argType)->GetType();
-                    if (argType->IsFunc())
-                        argType = dynamic_cast<cFuncDeclNode*>(argType)->GetType();
-                    if (paramType->IsVar())
-                        paramType = dynamic_cast<cVarDeclNode*>(paramType)->GetType();
-                    if (paramType->IsFunc())
-                        paramType = dynamic_cast<cFuncDeclNode*>(paramType)->GetType();
+                        dynamic_cast<cFuncDeclNode*>(node->GetDecl())->GetParam(i)->GetType();
 
                     if (argType->GetTypeName() != paramType->GetTypeName())
                     {
@@ -81,15 +73,14 @@ class cSemantics : public cVisitor
             else if (node->GetExprList() != nullptr)
             {
                 //trying to dereference something that's not an array
-                if (!dynamic_cast<cVarDeclNode*>(node->GetType())->GetType()->IsArray())
+                if (!node->GetType()->IsArray())
                 {
                     string error = node->GetName();
                     error += " is not an array"; 
                     node->SemanticError(error);
                 }
                 //using the wrong number of indexes
-                else if (dynamic_cast<cArrayDeclNode*>
-                        (dynamic_cast<cVarDeclNode*>(node->GetType())->GetType())->NumRanges() 
+                else if (dynamic_cast<cArrayDeclNode*>(node->GetType())->NumRanges() 
                         != node->NumExprs())
                 {
                     string error = node->GetName();
@@ -102,10 +93,6 @@ class cSemantics : public cVisitor
                     for (int i = 0; i < numIndexes; ++i)
                     {
                         cDeclNode * type = node->GetExpr(i)->GetType();
-                        if (type->IsVar())
-                            type = dynamic_cast<cVarDeclNode*>(type)->GetType();
-                        if (type->IsFunc())
-                            type = dynamic_cast<cFuncDeclNode*>(type)->GetType();
 
                         if (type->GetTypeName() != "integer")
                         {
@@ -131,15 +118,6 @@ class cSemantics : public cVisitor
             cDeclNode * lhsType = node->GetLhs()->GetType();
             cDeclNode * rhsType = node->GetRhs()->GetType();
 
-            //we want to find the actual type of both sides, not just a vardecl or funcdecl
-            if (lhsType->IsVar())
-                lhsType = dynamic_cast<cVarDeclNode*>(lhsType)->GetType();
-            if (rhsType->IsVar())
-                rhsType = dynamic_cast<cVarDeclNode*>(rhsType)->GetType();
-            if (lhsType->IsFunc())
-                lhsType = dynamic_cast<cFuncDeclNode*>(lhsType)->GetType();
-            if (rhsType->IsFunc())
-                rhsType = dynamic_cast<cFuncDeclNode*>(rhsType)->GetType();
             if (lhsType->IsArray() 
                 && dynamic_cast<cVarExprNode*>(node->GetLhs())->GetExprList() != nullptr)
                 lhsType = dynamic_cast<cArrayDeclNode*>(lhsType)->GetElementType();
@@ -199,12 +177,8 @@ class cSemantics : public cVisitor
                     node->SemanticError(error);
                 }
             }
-            else if (lhsType->IsFunc())
-            {
-
-            }
             //this happens for user defined types
-            else
+            else if (!lhsType->IsFunc())
             {
                 if (lhsType->GetTypeName() != rhsType->GetTypeName())
                 {

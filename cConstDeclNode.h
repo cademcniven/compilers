@@ -35,4 +35,8 @@ class cConstDeclNode : public cDeclNode
         virtual string NodeType() { return string("const_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual string GetTypeName() { return "const"; }
+        virtual cDeclNode* GetType()
+        {
+            return dynamic_cast<cExprNode*>(GetChild(1))->GetType();
+        }
 };

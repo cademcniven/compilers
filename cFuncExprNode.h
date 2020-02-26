@@ -29,6 +29,17 @@ class cFuncExprNode : public cExprNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual cDeclNode * GetType() 
         { 
+            if (GetChild(0) == nullptr)
+                return nullptr;
+
+            return dynamic_cast<cSymbol*>(GetChild(0))->GetDecl()->GetType(); 
+        }
+
+        virtual cDeclNode * GetDecl() 
+        { 
+            if (GetChild(0) == nullptr)
+                return nullptr;
+
             return dynamic_cast<cSymbol*>(GetChild(0))->GetDecl(); 
         }
 

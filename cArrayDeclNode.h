@@ -51,4 +51,6 @@ class cArrayDeclNode : public cDeclNode
         {
             return dynamic_cast<cDeclsNode*>(GetChild(2))->NumDecls();
         }
+
+        virtual cDeclNode* GetType() { return this; }
 };

@@ -39,6 +39,7 @@ class cBaseTypeNode: public cDeclNode
         virtual int GetSize() { return m_size; }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual string GetTypeName() { return m_typeName; }
+        virtual cDeclNode* GetType() { return this; }
     protected:
         string m_typeName;
         int m_size;

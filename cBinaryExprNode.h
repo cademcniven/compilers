@@ -31,21 +31,11 @@ class cBinaryExprNode : public cExprNode
 
             //if the lhs or rhs is a binaryExpr, recursively find the type
             cDeclNode * lhsType = (lhs->IsBinaryExpr()) 
-                    ? dynamic_cast<cBinaryExprNode*>(lhs)->GetType()
+                    ? lhs->GetType()
                     : dynamic_cast<cExprNode*>(GetChild(0))->GetType();
             cDeclNode * rhsType = (rhs->IsBinaryExpr()) 
-                    ? dynamic_cast<cBinaryExprNode*>(rhs)->GetType()
+                    ? rhs->GetType()
                     : dynamic_cast<cExprNode*>(GetChild(2))->GetType();
-
-            //find the types of vardecls and funcdecls
-            if (lhsType->IsVar())
-                lhsType = dynamic_cast<cVarDeclNode*>(lhsType)->GetType();
-            if (rhsType->IsVar())
-                rhsType = dynamic_cast<cVarDeclNode*>(rhsType)->GetType();
-            if (lhsType->IsFunc())
-                lhsType = dynamic_cast<cFuncDeclNode*>(lhsType)->GetType();
-            if (rhsType->IsFunc())
-                rhsType = dynamic_cast<cFuncDeclNode*>(rhsType)->GetType();
 
             if (lhsType->IsReal()) return lhsType;
             if (rhsType->IsReal()) return rhsType;
