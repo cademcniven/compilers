@@ -54,8 +54,27 @@ class cVarExprNode : public cExprNode
 
             g_symbolTable.InsertSymbol(symbol);
             AddChild(symbol); 
+
+            SetSize(symbol->GetDecl()->GetSize());
+            SetOffset(symbol->GetDecl()->GetOffset());
         }
 
+        virtual string AttributesToString()
+        {
+            string attributes = "";
+            if (m_size != 0)
+            {
+                attributes += " size=\"";
+                attributes += std::to_string(m_size);
+                attributes += "\"";
+            }
+
+            attributes += " offset=\"";
+            attributes += std::to_string(m_offset);
+            attributes += "\"";
+
+            return attributes;
+        }
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual cDeclNode * GetType() 
@@ -66,10 +85,19 @@ class cVarExprNode : public cExprNode
             return m_value->GetDecl()->GetType(); 
         }
         
+        cDeclNode * GetDecl() { return m_value->GetDecl(); }
+
         string GetName()
         {
             return dynamic_cast<cSymbol*>(GetChild(0))->GetName();
         }
+
+        int GetSize() { return m_size; }
+        int GetOffset() { return m_offset; }
+        void SetSize(int size) { m_size = size; }
+        void SetOffset(int offset) { m_offset = offset; }
     protected:
         cSymbol* m_value;
+        int m_size;
+        int m_offset;
 };
