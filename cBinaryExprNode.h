@@ -39,8 +39,10 @@ class cBinaryExprNode : public cExprNode
 
             if (lhsType->IsReal()) return lhsType;
             if (rhsType->IsReal()) return rhsType;
-            if (lhsType->IsChar()) return lhsType;
-            if (rhsType->IsChar()) return rhsType;
+            if (lhsType->IsChar() && 
+                (!rhsType->IsChar() && rhsType->IsInt())) return rhsType;
+            if (rhsType->IsChar() &&
+                (!lhsType->IsChar() && lhsType->IsInt())) return lhsType;
             if (lhsType->IsInt()) return lhsType;
             if (rhsType->IsInt()) return rhsType;
 

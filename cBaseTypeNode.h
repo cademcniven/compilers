@@ -33,7 +33,7 @@ class cBaseTypeNode: public cDeclNode
         }
         virtual string NodeType() { return string("type"); }
         virtual bool IsReal() { return m_isFloat; }
-        virtual bool IsInt() { return m_size == 4; }
+        virtual bool IsInt() { return m_size == 4 || m_size == 1;}
         virtual bool IsChar() { return m_size == 1; }
         virtual bool IsType() { return true; }
         virtual int GetSize() { return m_size; }

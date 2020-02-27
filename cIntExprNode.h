@@ -31,7 +31,9 @@ class cIntExprNode : public cExprNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual cDeclNode * GetType()
         {
-            //integer is guaranteed to be in the symbol table.
+            if (m_value >= -128 && m_value <= 127)
+                return g_symbolTable.LookupSymbol("char")->GetDecl();
+
             return g_symbolTable.LookupSymbol("integer")->GetDecl();
         }
 

@@ -46,7 +46,8 @@ class cSemantics : public cVisitor
                     cDeclNode * paramType = 
                         dynamic_cast<cFuncDeclNode*>(node->GetDecl())->GetParam(i)->GetType();
 
-                    if (argType->GetTypeName() != paramType->GetTypeName())
+                    if (!(argType->IsChar() && paramType->IsInt()) && 
+                        argType->GetTypeName() != paramType->GetTypeName())
                     {
                         string error = "Cannot assign ";
                         error += argType->GetTypeName();
@@ -94,7 +95,7 @@ class cSemantics : public cVisitor
                     {
                         cDeclNode * type = node->GetExpr(i)->GetType();
 
-                        if (type->GetTypeName() != "integer")
+                        if (!type->IsInt())
                         {
                             string error = "Index of ";
                             error += node->GetName();
@@ -137,37 +138,9 @@ class cSemantics : public cVisitor
                     node->SemanticError(error);
                 }
             }
-            else if (lhsType->IsInt())
-            {
-                if (!(rhsType->IsInt() || rhsType->IsChar()))
-                {
-                    string error = "Cannot assign ";
-                    error += rhsType->GetTypeName();
-                    error += " to ";
-                    error += lhsType->GetTypeName();
-
-                    node->SemanticError(error);
-                }
-            }
             else if (lhsType->IsChar())
             {
-                //if the rhs is an int, check the value of it to see if it can be
-                //interpreted as a char
-                bool intIsChar = false;
-                if (rhsType->IsInt())
-                {
-                    cIntExprNode * intval = dynamic_cast<cIntExprNode*>(node->GetRhs());
-
-                    if (intval != nullptr)
-                    {
-                        int value = 
-                            dynamic_cast<cIntExprNode*>(node->GetRhs())->GetValue();
-                        if (value <= 127 && value >= -128)
-                            intIsChar = true;
-                    }
-                }
-
-                if (!rhsType->IsChar() && !intIsChar)
+                if (!rhsType->IsChar())
                 {
                     string error = "Cannot assign ";
                     error += rhsType->GetTypeName();
@@ -177,7 +150,19 @@ class cSemantics : public cVisitor
                     node->SemanticError(error);
                 }
             }
-            //this happens for user defined types
+            else if (lhsType->IsInt())
+            {
+                if (!rhsType->IsInt() && !rhsType->IsChar())
+                {
+                    string error = "Cannot assign ";
+                    error += rhsType->GetTypeName();
+                    error += " to ";
+                    error += lhsType->GetTypeName();
+
+                    node->SemanticError(error);
+                }
+            }
+                        //this happens for user defined types
             else if (!lhsType->IsFunc())
             {
                 if (lhsType->GetTypeName() != rhsType->GetTypeName())
