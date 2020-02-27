@@ -42,8 +42,27 @@ class cVarDeclNode : public cDeclNode
             g_symbolTable.InsertSymbol(symbol);
 
             AddChild(symbol);
+
+            m_offset = 0;
+            m_size = type->GetDecl()->GetSize();
         }
 
+        virtual string AttributesToString()
+        {
+            string attributes = "";
+            if (m_size != 0)
+            {
+                attributes += " size=\"";
+                attributes += std::to_string(m_size);
+                attributes += "\"";
+            }
+
+            attributes += " offset=\"";
+            attributes += std::to_string(m_offset);
+            attributes += "\"";
+
+            return attributes;
+        }
         virtual string NodeType() { return string("var_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual bool IsVar() { return true; }
@@ -57,4 +76,12 @@ class cVarDeclNode : public cDeclNode
             
             return type;
         }
+
+        int GetSize() { return m_size; }
+        int GetOffset() { return m_offset; }
+        void SetOffset(int offset) { m_offset = offset; }
+
+        private:
+            int m_offset;
+            int m_size;
 };

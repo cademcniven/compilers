@@ -18,6 +18,7 @@
 #include "astnodes.h"
 #include "pascalparse.h"
 #include "cSemantics.h"
+#include "cComputeSize.h"
 
 // define global variables
 cSymbolTable g_symbolTable;
@@ -67,6 +68,8 @@ int main(int argc, char **argv)
 
         if (yynerrs == 0)
         {
+            cComputeSize * sizer = new cComputeSize();
+            sizer->VisitAllNodes(yyast_root);
             output << yyast_root->ToString() << std::endl;
         }
     }

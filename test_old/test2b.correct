@@ -1,0 +1,3 @@
+ERROR: Symbol ccc already exists in current scope on line 9
+ERROR: Symbol vvv already exists in current scope on line 15
+2 Errors in compile
