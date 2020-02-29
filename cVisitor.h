@@ -9,7 +9,6 @@
 // Need forward declaration of all classes.
 // Forward declare them to avoid circular include problems
 
-class cArrayDeclNode;
 class cAssignNode;
 class cAstNode;
 class cBaseTypeNode;
@@ -42,6 +41,7 @@ class cUnaryExprNode;
 class cVarDeclNode;
 class cVarDeclsNode;
 class cVarExprNode;
+class cArrayDeclNode;
 class cWhileNode;
 class cWriteNode;
 

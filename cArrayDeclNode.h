@@ -8,11 +8,7 @@
 // cade.mcniven@oit.edu
 //
 
-#include "cAstNode.h"
-#include "cDeclNode.h"
-#include "cDeclsNode.h"
-#include "cBaseTypeNode.h"
-#include "cSymbolTable.h"
+#include "cRangeDeclNode.h"
 #include <vector>
 
 using std::vector;
@@ -82,8 +78,16 @@ class cArrayDeclNode : public cDeclNode
             string attributes = " size=\"";
             attributes += std::to_string(m_size);
             attributes += "\"";
+            attributes += GetAttributes();
 
-            attributes += " rowsizes=\"";
+            return attributes;
+        }
+
+        //this gets put in its own function because the same
+        //info is needed for varref's
+        string GetAttributes()
+        {
+            string attributes = " rowsizes=\"";
             int numRanges = NumRanges();
             for (int i = 0; i < numRanges; ++i)
             {
@@ -105,6 +109,7 @@ class cArrayDeclNode : public cDeclNode
             attributes += "\"";
 
             return attributes;
+
         }
 
     private:

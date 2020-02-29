@@ -49,8 +49,13 @@ class cComputeSize : public cVisitor
         //******************************************************************************************
         virtual void Visit(cVarExprNode * node)
         {
+            int size = node->GetDecl()->GetSize();
+
+            if (node->GetType()->IsArray())
+                size = dynamic_cast<cArrayDeclNode*>(node->GetType())->GetElementType()->GetSize();
+
             node->SetOffset(node->GetDecl()->GetOffset());
-            node->SetSize(node->GetDecl()->GetSize());
+            node->SetSize(size);
 
             node->VisitAllChildren(this);
         }

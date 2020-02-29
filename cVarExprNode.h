@@ -11,10 +11,7 @@
 // cade.mcniven@oit.edu
 //
 
-#include "cAstNode.h"
-#include "cExprNode.h"
-#include "cSymbol.h"
-#include "cExprListNode.h"
+#include "cArrayDeclNode.h"
 
 class cVarExprNode : public cExprNode
 {
@@ -54,9 +51,6 @@ class cVarExprNode : public cExprNode
 
             g_symbolTable.InsertSymbol(symbol);
             AddChild(symbol); 
-
-            SetSize(symbol->GetDecl()->GetSize());
-            SetOffset(symbol->GetDecl()->GetOffset());
         }
 
         virtual string AttributesToString()
@@ -73,6 +67,9 @@ class cVarExprNode : public cExprNode
             attributes += std::to_string(m_offset);
             attributes += "\"";
 
+            if (GetType()->IsArray())
+            {    attributes += dynamic_cast<cArrayDeclNode*>(GetType())->GetAttributes();
+            }
             return attributes;
         }
         virtual string NodeType() { return string("varref"); }
