@@ -28,6 +28,11 @@ class cDeclsNode : public cAstNode
 
         int NumDecls() { return NumChildren(); }
 
+        cDeclNode * GetDecl(int index)
+        {
+            return dynamic_cast<cDeclNode*>(GetChild(index));
+        }
+
         virtual string NodeType() { return string("decls"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

@@ -33,6 +33,9 @@ class cRangeDeclNode : public cDeclNode
         { 
             return g_symbolTable.LookupSymbol("integer")->GetDecl();
         }
+
+        int GetRangeStart() { return m_start; }
+        int GetRangeEnd() { return m_end; }
     private:
         int m_start;
         int m_end;

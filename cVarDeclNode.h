@@ -78,6 +78,7 @@ class cVarDeclNode : public cDeclNode
         }
 
         int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
         int GetOffset() { return m_offset; }
         void SetOffset(int offset) { m_offset = offset; }
 
