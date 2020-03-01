@@ -128,8 +128,37 @@ class cComputeSize : public cVisitor
         //******************************************************************************************
         virtual void Visit(cFuncExprNode * node)
         {
-            node->SetParamSize(
-                dynamic_cast<cFuncDeclNode*>(node->GetDecl())->GetParams()->GetSize());
+            cVarDeclsNode* params =
+                dynamic_cast<cFuncDeclNode*>(node->GetDecl())->GetParams();
+
+            if (params == nullptr)
+                node->SetParamSize(0);
+            else
+                node->SetParamSize(params->GetSize());
+
+            node->VisitAllChildren(this);
+        }
+
+        //******************************************************************************************
+        virtual void Visit(cProcDeclNode * node)
+        {
+            int oldOffset = m_offset;
+            m_offset = 0;
+            node->VisitAllChildren(this);
+            m_offset = oldOffset;
+        }
+
+        //******************************************************************************************
+        virtual void Visit(cProcCallNode * node)
+        {
+            cVarDeclsNode* params =
+                dynamic_cast<cProcDeclNode*>(node->GetDecl())->GetParams();
+
+            if (params == nullptr)
+                node->SetParamSize(0);
+            else
+                node->SetParamSize(params->GetSize());
+
             node->VisitAllChildren(this);
         }
 

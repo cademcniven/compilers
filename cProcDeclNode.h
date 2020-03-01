@@ -32,8 +32,22 @@ class cProcDeclNode : public cDeclNode
             AddChild(symbol);
         }
 
-        void AddParams(cVarDeclsNode * params) { AddChild(params); }
-        void AddBlock(cBlockNode * block) { AddChild(block); }
+        void AddParams(cVarDeclsNode * params) 
+        { 
+            params->SetIsArgs(true);
+            AddChild(params); 
+        }
+
+        cVarDeclsNode * GetParams()
+        {
+            return dynamic_cast<cVarDeclsNode*>(GetChild(1));
+        }
+
+        void AddBlock(cBlockNode * block) 
+        { 
+            block->SetIsFuncBlock(true);
+            AddChild(block); 
+        }
 
         virtual string NodeType() { return string("proc"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
