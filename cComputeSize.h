@@ -1,4 +1,13 @@
 #pragma once
+//************************************************
+// cComputSize.h
+//
+// Computes the size of types and functions
+//
+// Author: Cade McNiven
+// cade.mcniven@oit.edu
+//
+
 #include "astnodes.h"
 #include "cVisitor.h"
 #include <vector>
@@ -17,9 +26,7 @@ class cComputeSize : public cVisitor
         virtual void Visit(cVarDeclNode * node)
         {
             if (node->GetSize() != 1)
-            {
                 m_offset = AlignOffset(m_offset);
-            }
 
             if (node->GetType()->IsArray())
                 node->SetSize(node->GetType()->GetSize());
@@ -69,9 +76,10 @@ class cComputeSize : public cVisitor
             for (int i = 0; i < numRanges; ++i)
             {
                 rowSizes.push_back(node->GetElementType()->GetSize() * prevRowLength);
+                startIndexes.push_back(node->GetRangeStart(i));
+
                 prevRowLength *= (node->GetRangeEnd(i) - node->GetRangeStart(i) + 1) * 
                     node->GetElementType()->GetSize();
-                startIndexes.push_back(node->GetRangeStart(i));
             }   
 
             node->SetSize(prevRowLength);
@@ -165,15 +173,10 @@ class cComputeSize : public cVisitor
     private:
         int m_offset;
 
-        int RoundDown(int offset)
-        {
-            if (offset % 4 == 0) return offset;
+        //the only efficient line in this codebase
+        int AlignOffset(int offset) { return (offset + 3) & ~0x03; }
 
-            return offset - (4 + offset % 4);
-        }
-
-        int AlignOffset(int offset)
-        {
-            return (offset + 3) & ~0x03; //this is the only efficient line in this codebase
-        }
+        //there's probably a more optimal way of doing this one but 
+        //I couldn't figure it out
+        int RoundDown(int offset) { return -((-offset + 3) & ~0x03); }
 };
