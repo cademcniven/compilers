@@ -26,11 +26,17 @@ class cVarExprNode : public cExprNode
 
         cExprListNode * GetExprList()
         {
+            if (GetChild(1) == nullptr)
+                return nullptr;
+
             return dynamic_cast<cExprListNode*>(GetChild(1));
         }
 
         cExprNode * GetExpr(int index)
         {
+            if (GetExprList() == nullptr)
+                return nullptr;
+
             return GetExprList()->GetExpr(index);
         }
 

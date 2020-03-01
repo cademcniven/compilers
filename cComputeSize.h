@@ -62,19 +62,19 @@ class cComputeSize : public cVisitor
         virtual void Visit(cArrayDeclNode * node)
         {
             int numRanges = node->NumRanges();
-            int size = 0;
             vector<int> rowSizes;
             vector<int> startIndexes;
 
+            int prevRowLength = 1;
             for (int i = 0; i < numRanges; ++i)
             {
-                int rowSize = node->GetRangeEnd(i) - node->GetRangeStart(i) + 1;
-                rowSizes.push_back(node->GetElementType()->GetSize());
+                rowSizes.push_back(node->GetElementType()->GetSize() * prevRowLength);
+                prevRowLength *= (node->GetRangeEnd(i) - node->GetRangeStart(i) + 1) * 
+                    node->GetElementType()->GetSize();
                 startIndexes.push_back(node->GetRangeStart(i));
-                size += rowSizes[i] * rowSize;
             }   
 
-            node->SetSize(size);
+            node->SetSize(prevRowLength);
             node->SetRowSizes(rowSizes);
             node->SetStartIndexes(startIndexes);
 

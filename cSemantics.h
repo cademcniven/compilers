@@ -94,10 +94,16 @@ class cSemantics : public cVisitor
                     for (int i = 0; i < numIndexes; ++i)
                     {
                         cDeclNode * type = node->GetExpr(i)->GetType();
+
+                        if (type->IsArray())
+                            type = dynamic_cast<cArrayDeclNode*>(type)->GetElementType();
+
                         if (!type->IsInt())
                         {
                             string error = "Index of ";
                             error += node->GetName();
+                            error += " ";
+                            error += type->GetTypeName();
                             error += " is not an integer";
                             node->SemanticError(error);
                         }
@@ -118,11 +124,10 @@ class cSemantics : public cVisitor
             cDeclNode * lhsType = node->GetLhs()->GetType();
             cDeclNode * rhsType = node->GetRhs()->GetType();
 
-            if (lhsType->IsArray() 
+            while (lhsType->IsArray() 
                 && dynamic_cast<cVarExprNode*>(node->GetLhs())->GetExprList() != nullptr)
                 lhsType = dynamic_cast<cArrayDeclNode*>(lhsType)->GetElementType();
-            if (rhsType->IsArray()
-                && dynamic_cast<cVarExprNode*>(node->GetRhs())->GetExprList() != nullptr)
+            while (rhsType->IsArray())
                 rhsType = dynamic_cast<cArrayDeclNode*>(rhsType)->GetElementType();
 
             if (lhsType->IsReal())
