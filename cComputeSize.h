@@ -110,7 +110,6 @@ class cComputeSize : public cVisitor
             int oldOffset = m_offset;
             m_offset = -12;
 
-            int argsSize = 0;
             int numArgs = node->NumDecls();
             for (int i = 0; i < numArgs; ++i)
             {
@@ -118,12 +117,11 @@ class cComputeSize : public cVisitor
                 arg->SetSize(arg->GetType()->GetSize());
                 arg->SetOffset(m_offset);
 
-                argsSize += arg->GetSize();
                 m_offset -= arg->GetSize();
-                m_offset = AlignOffset(m_offset);
+                m_offset = RoundDown(m_offset);
             }
 
-            node->SetSize(argsSize);
+            node->SetSize(-12 - m_offset);
             m_offset = oldOffset;
         }
 
@@ -138,8 +136,15 @@ class cComputeSize : public cVisitor
     private:
         int m_offset;
 
+        int RoundDown(int offset)
+        {
+            if (offset % 4 == 0) return offset;
+
+            return offset - (4 + offset % 4);
+        }
+
         int AlignOffset(int offset)
         {
-            return (offset + WORD_SIZE - 1) & -WORD_SIZE;
+            return (offset + 3) & ~0x03; //this is the only efficient line in this codebase
         }
 };
