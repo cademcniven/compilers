@@ -26,6 +26,7 @@ class cBlockNode : public cStmtNode
             AddChild(decls);
             AddChild(statements);
             m_size = 0;
+            m_isFuncBlock = false;
         }
 
         virtual string AttributesToString()
@@ -39,6 +40,9 @@ class cBlockNode : public cStmtNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         int GetSize() { return m_size; }
         void SetSize(int size) { m_size = size; }
+        bool IsFuncBlock() { return m_isFuncBlock; }
+        void SetIsFuncBlock(bool isFuncBlock) { m_isFuncBlock = isFuncBlock; }
     private:
         int m_size;
+        bool m_isFuncBlock;
 };

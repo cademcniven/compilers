@@ -74,7 +74,10 @@ class cFuncDeclNode : public cDeclNode
                 SemanticParseError(error);
             }
             else
+            {
+                params->SetIsArgs(true);
                 AddChild(params); 
+            }
         }
 
         //********************************************************************
@@ -110,7 +113,10 @@ class cFuncDeclNode : public cDeclNode
                 SemanticParseError(error);
             }
             else
+            {
+                block->SetIsFuncBlock(true);
                 AddChild(block); 
+            }
         }
 
         //********************************************************************
@@ -146,8 +152,33 @@ class cFuncDeclNode : public cDeclNode
         virtual bool IsFunc() { return true; }
         virtual string GetTypeName() { return "function"; }
 
+        int GetSize() { return m_size; }
+        int GetOffset() { return m_offset; }
+        void SetSize(int size) { m_size = size; }
+        void SetOffset(int offset) { m_offset = offset; }
+        
+        virtual string AttributesToString()
+        {
+            string attributes = "";
+
+            if (m_size != 0)
+            {
+                attributes += " size=\"";
+                attributes += std::to_string(m_size);
+                attributes += "\"";
+            }
+
+            attributes += " offset=\"";
+            attributes += std::to_string(m_offset);
+            attributes += "\"";
+
+            return attributes;
+        }
+
     private:
         bool m_isForward;
         string m_name;
         cFuncDeclNode * m_prevDecl;
+        int m_size;
+        int m_offset;
 };

@@ -94,7 +94,6 @@ class cSemantics : public cVisitor
                     for (int i = 0; i < numIndexes; ++i)
                     {
                         cDeclNode * type = node->GetExpr(i)->GetType();
-
                         if (!type->IsInt())
                         {
                             string error = "Index of ";

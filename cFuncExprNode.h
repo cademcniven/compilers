@@ -23,6 +23,8 @@ class cFuncExprNode : public cExprNode
         {
             AddChild(name);
             AddChild(args);
+
+            m_paramSize = 0;
         }
 
         virtual string NodeType() { return string("funcCall"); }
@@ -59,4 +61,24 @@ class cFuncExprNode : public cExprNode
         { 
             return dynamic_cast<cExprListNode*>(GetChild(1))->GetExpr(index);
         }
+
+        int GetParamSize() { return m_paramSize; }
+        void SetParamSize(int paramSize) { m_paramSize = paramSize; }
+
+        virtual string AttributesToString()
+        {
+            string attributes = "";
+
+            if (m_paramSize != 0)
+            {
+                attributes += " paramSize=\"";
+                attributes += std::to_string(m_paramSize);
+                attributes += "\"";
+            }
+
+            return attributes;
+        }
+
+    private:
+        int m_paramSize;
 };
