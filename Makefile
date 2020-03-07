@@ -12,7 +12,8 @@ OBJS=main.o \
 	 pascallex.o \
 	 pascalparse.o \
 	 cVisitor.o \
-	 cSymbolTable.o 
+	 cSymbolTable.o \
+	 emit.o
 
 all: pascal
 
@@ -25,6 +26,7 @@ clean:
 	rm -f out.xml
 	rm -f out2.xml
 	rm -f out
+	rm -f pascalout.*
 
 .cpp.o:
 	g++ $(COPTS) $? -o $@
@@ -37,6 +39,9 @@ main.o: main.cpp pascalparse.c pascallex.c
 
 cSymbolTable.o: cSymbolTable.cpp
 	g++ $(COPTS) cSymbolTable.cpp -o cSymbolTable.o
+
+emit.o: emit.cpp
+	g++ $(COPTS) emit.cpp -o emit.o
 
 pascallex.o: pascallex.c
 	g++ $(COPTS) -Wno-sign-compare $? -o $@
