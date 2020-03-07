@@ -86,6 +86,20 @@ class cCodeGen : public cVisitor
             node->GetOp()->Visit(this);
         }
 
+        virtual void Visit(cUnaryExprNode * node)
+        {
+            node->GetExpr()->Visit(this);
+            
+            //we can't visit the op node because
+            //- means something different in this context
+            int op = node->GetOp()->GetOp();
+
+            if (op == '-')
+                EmitString("NEG\n");
+            else if (op == NOT)
+                EmitString("NOT\n");
+        }
+
         virtual void Visit(cOpNode * node)
         {
             int op = node->GetOp();
