@@ -27,6 +27,7 @@ clean:
 	rm -f out2.xml
 	rm -f out
 	rm -f pascalout.*
+	rm -f pasclout.*
 
 .cpp.o:
 	g++ $(COPTS) $? -o $@

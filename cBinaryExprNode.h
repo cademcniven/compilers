@@ -24,6 +24,21 @@ class cBinaryExprNode : public cExprNode
         virtual string NodeType() { return string("expr"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual bool IsBinaryExpr() { return true; }
+        cExprNode * GetLhs()
+        {
+            return dynamic_cast<cExprNode*>(GetChild(0));
+        }
+        
+        cExprNode * GetRhs()
+        {
+            return dynamic_cast<cExprNode*>(GetChild(2));
+        }
+
+        cOpNode * GetOp()
+        {
+            return dynamic_cast<cOpNode*>(GetChild(1));
+        }
+
         virtual cDeclNode * GetType()
         {
             cExprNode * lhs = dynamic_cast<cExprNode*>(GetChild(0));

@@ -78,4 +78,62 @@ class cCodeGen : public cVisitor
             EmitInt(offset);
             EmitString("\n");
         }
+
+        virtual void Visit(cBinaryExprNode * node)
+        {
+            node->GetLhs()->Visit(this);
+            node->GetRhs()->Visit(this);
+            node->GetOp()->Visit(this);
+        }
+
+        virtual void Visit(cOpNode * node)
+        {
+            int op = node->GetOp();
+
+            switch (op)
+            {
+                case OR:
+                    EmitString("OR\n");
+                    break;
+                case AND:
+                    EmitString("AND\n");
+                    break;
+                case MOD:
+                    EmitString("MOD\n");
+                    break;
+                case DIV:
+                    EmitString("DIVIDE\n");
+                    break;
+                case NOT:
+                    EmitString("MINUS\n");
+                    break;
+                case LE:
+                    EmitString("LE\n");
+                    break;
+                case GE:
+                    EmitString("GE\n");
+                    break;
+                case NOT_EQUAL:
+                    EmitString("NE\n");
+                    break;
+                case '<':
+                    EmitString("LT\n");
+                    break;
+                case '>':
+                    EmitString("GT\n");
+                    break;
+                case '/':
+                    EmitString("DIVIDE\n");
+                    break;
+                case '*':
+                    EmitString("TIMES\n");
+                    break;
+                case '+':
+                    EmitString("PLUS\n");
+                    break;
+                case '-':
+                    EmitString("MINUS\n");
+                    break;
+            }
+        }
 };
