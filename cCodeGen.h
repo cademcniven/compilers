@@ -56,13 +56,36 @@ class cCodeGen : public cVisitor
             int offset = node->GetLhs()->GetOffset();
             int size = node->GetLhs()->GetSize();
 
-            if (size == 1)
-                EmitString("POPCVAR ");
+            //EmitString(std::to_string(node->GetLhs()->GetType()->IsArray()));
+            if (node->GetLhs()->GetType()->IsArray())
+            {
+                cArrayDeclNode * arr =
+                    dynamic_cast<cArrayDeclNode*>(node->GetLhs()->GetType());
+                EmitString("PUSHFP\n");
+                EmitString("PUSH ");
+                EmitInt(node->GetLhs()->GetOffset());
+                EmitString("\nPLUS\n");
+                EmitString("PUSH ");
+                int index =
+                    dynamic_cast<cIntExprNode*>(node->GetLhs()->GetExpr(0))->
+                    GetValue();
+                EmitInt(index);
+                EmitString("\nPUSH ");
+                EmitInt(arr->GetElementType()->GetSize());
+                EmitString("\nTIMES\n");
+                EmitString("PLUS\n");
+                EmitString("POPVARIND\n");
+            }
             else
-                EmitString("POPVAR ");
+            {
+                if (size == 1)
+                    EmitString("POPCVAR ");
+                else
+                    EmitString("POPVAR ");
 
-            EmitInt(offset);
-            EmitString("\n");
+                EmitInt(offset);
+                EmitString("\n");
+            }
         }
 
         virtual void Visit(cVarExprNode * node)
@@ -70,13 +93,34 @@ class cCodeGen : public cVisitor
             int offset = node->GetOffset();
             int size = node->GetSize();
 
-            if (size == 1)
-                EmitString("PUSHCVAR ");
+            if (node->GetType()->IsArray())
+            {
+                cArrayDeclNode * arr =
+                    dynamic_cast<cArrayDeclNode*>(node->GetType());
+                EmitString("PUSHFP\n");
+                EmitString("PUSH ");
+                EmitInt(arr->GetOffset());
+                EmitString("\nPLUS\n");
+                EmitString("PUSH ");
+                int index =
+                    dynamic_cast<cIntExprNode*>(node->GetExpr(0))->GetValue();
+                EmitInt(index);
+                EmitString("\nPUSH ");
+                EmitInt(arr->GetElementType()->GetSize());
+                EmitString("\nTIMES\n");
+                EmitString("PLUS\n");
+                EmitString("PUSHVARIND\n");
+            }
             else
-                EmitString("PUSHVAR ");
+            {
+                if (size == 1)
+                    EmitString("PUSHCVAR ");
+                else
+                    EmitString("PUSHVAR ");
 
-            EmitInt(offset);
-            EmitString("\n");
+                EmitInt(offset);
+                EmitString("\n");
+            }
         }
 
         virtual void Visit(cBinaryExprNode * node)
@@ -148,6 +192,39 @@ class cCodeGen : public cVisitor
                 case '-':
                     EmitString("MINUS\n");
                     break;
+                case '=':
+                    EmitString("EQ\n");
+                    break;
             }
         }
+
+        virtual void Visit(cIfNode * node)
+        {
+            node->GetCondition()->Visit(this);
+
+            //label 1 for jumping to else statement
+            string label1 = GenerateLabel();
+            //label 2 for jumping past else statement
+            string label2 = GenerateLabel();
+
+            EmitString("JUMPE @");
+            EmitString(label1);
+            EmitString("\n");
+
+            node->GetIfStmt()->Visit(this);
+
+            EmitString("JUMP @");
+            EmitString(label2);
+            EmitString("\n");
+
+            EmitString(label1);
+            EmitString(":\n");
+
+            if (node->GetElseStmt() != nullptr)
+                node->GetElseStmt()->Visit(this);
+
+            EmitString(label2);
+            EmitString(":\n");
+        }
+
 };
