@@ -175,6 +175,8 @@ class cFuncDeclNode : public cDeclNode
             return attributes;
         }
 
+        string GetName() { return m_name; }
+
     private:
         bool m_isForward;
         string m_name;

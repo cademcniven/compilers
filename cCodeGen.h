@@ -56,7 +56,6 @@ class cCodeGen : public cVisitor
             int offset = node->GetLhs()->GetOffset();
             int size = node->GetLhs()->GetSize();
 
-            //EmitString(std::to_string(node->GetLhs()->GetType()->IsArray()));
             if (node->GetLhs()->GetType()->IsArray())
             {
                 cArrayDeclNode * arr =
@@ -99,7 +98,7 @@ class cCodeGen : public cVisitor
                     dynamic_cast<cArrayDeclNode*>(node->GetType());
                 EmitString("PUSHFP\n");
                 EmitString("PUSH ");
-                EmitInt(arr->GetOffset());
+                EmitInt(node->GetOffset());
                 EmitString("\nPLUS\n");
                 EmitString("PUSH ");
                 int index =
@@ -227,4 +226,43 @@ class cCodeGen : public cVisitor
             EmitString(":\n");
         }
 
+        virtual void Visit(cFuncDeclNode * node)
+        {
+            if (node->GetBlock() == nullptr)
+                return;
+
+            EmitString(".function ");
+            EmitString(node->GetName());
+            EmitString("\n");
+
+            EmitString(node->GetName());
+            EmitString(":\n");
+            EmitString("ADJSP ");
+            EmitInt(node->GetBlock()->GetSize());
+            EmitString("\n");
+
+            node->GetBlock()->Visit(this);
+
+            //EmitString("PUSH 0\n");
+            EmitString("RETURNV\n");
+           
+        }
+
+        virtual void Visit(cFuncExprNode * node)
+        {
+            int numArgs = node->NumArgs();
+            if (numArgs != 0)
+            {
+                for (int i = numArgs - 1; i >= 0; --i)
+                    node->GetArg(i)->Visit(this);
+            }
+
+            EmitString("CALL @");
+            EmitString(node->GetName());
+            EmitString("\n");
+
+            EmitString("POPARGS ");
+            EmitInt(node->GetParamSize());
+            EmitString("\n");
+        }
 };
