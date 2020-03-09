@@ -64,11 +64,7 @@ class cCodeGen : public cVisitor
                 EmitString("PUSH ");
                 EmitInt(node->GetLhs()->GetOffset());
                 EmitString("\nPLUS\n");
-                EmitString("PUSH ");
-                int index =
-                    dynamic_cast<cIntExprNode*>(node->GetLhs()->GetExpr(0))->
-                    GetValue();
-                EmitInt(index);
+                node->GetLhs()->GetExpr(0)->Visit(this);
                 EmitString("\nPUSH ");
                 EmitInt(arr->GetElementType()->GetSize());
                 EmitString("\nTIMES\n");
@@ -100,10 +96,7 @@ class cCodeGen : public cVisitor
                 EmitString("PUSH ");
                 EmitInt(node->GetOffset());
                 EmitString("\nPLUS\n");
-                EmitString("PUSH ");
-                int index =
-                    dynamic_cast<cIntExprNode*>(node->GetExpr(0))->GetValue();
-                EmitInt(index);
+                node->GetExpr(0)->Visit(this);
                 EmitString("\nPUSH ");
                 EmitInt(arr->GetElementType()->GetSize());
                 EmitString("\nTIMES\n");
