@@ -1,3 +1,11 @@
+//***********************************
+//
+// cCodeGen.h
+//
+// Author: Cade McNiven
+// Purpose: Outputs stackl code from the AST
+//
+//**********************************
 #pragma once
 #include "astnodes.h"
 #include "cVisitor.h"
@@ -24,9 +32,11 @@ class cCodeGen : public cVisitor
         //*******************************************************************************
         virtual void Visit(cProgramNode * node)
         {
+            //decls need to come before main otherwise functions won't work
             if (node->GetBlock()->GetDecls() != nullptr)
                 node->GetBlock()->GetDecls()->Visit(this);
 
+            EmitString(".function main\n");
             EmitString("main:\n");
             EmitString("ADJSP ");
             EmitInt(node->GetBlock()->GetSize());
@@ -72,7 +82,7 @@ class cCodeGen : public cVisitor
                     dynamic_cast<cArrayDeclNode*>(node->GetLhs()->GetType());
                 EmitString("PUSHFP\n");
                 EmitString("PUSH ");
-                EmitInt(node->GetLhs()->GetOffset());
+                EmitInt(offset);
                 EmitString("\nPLUS\n");
                 node->GetLhs()->GetExpr(0)->Visit(this);
                 EmitString("\nPUSH ");
@@ -82,8 +92,7 @@ class cCodeGen : public cVisitor
                 if (arr->GetElementType()->GetSize() == 1)
                     EmitString("POPCVARIND\n");
                 else
-
-                EmitString("POPVARIND\n");
+                    EmitString("POPVARIND\n");
             }
             else
             {
@@ -109,7 +118,7 @@ class cCodeGen : public cVisitor
                     dynamic_cast<cArrayDeclNode*>(node->GetType());
                 EmitString("PUSHFP\n");
                 EmitString("PUSH ");
-                EmitInt(node->GetOffset());
+                EmitInt(offset);
                 EmitString("\nPLUS\n");
                 node->GetExpr(0)->Visit(this);
                 EmitString("\nPUSH ");
