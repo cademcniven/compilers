@@ -38,6 +38,21 @@ class cProcCallNode : public cStmtNode
             return dynamic_cast<cSymbol*>(GetChild(0))->GetDecl();
         }
 
+        int NumArgs()
+        {
+            return dynamic_cast<cExprListNode*>(GetChild(1))->NumExprs();
+        }
+
+        cExprNode * GetArg(int index)
+        {
+            return dynamic_cast<cExprListNode*>(GetChild(1))->GetExpr(index);
+        }
+
+        string GetName()
+        {
+            return dynamic_cast<cSymbol*>(GetChild(0))->GetName();
+        }
+
         int GetParamSize() { return m_paramSize; }
         void SetParamSize(int paramSize) { m_paramSize = paramSize; }
 

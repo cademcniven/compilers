@@ -42,6 +42,17 @@ class cBlockNode : public cStmtNode
         void SetSize(int size) { m_size = size; }
         bool IsFuncBlock() { return m_isFuncBlock; }
         void SetIsFuncBlock(bool isFuncBlock) { m_isFuncBlock = isFuncBlock; }
+
+        cDeclsNode * GetDecls()
+        {
+            return dynamic_cast<cDeclsNode*>(GetChild(0));
+        }
+
+        cStmtsNode * GetStmts()
+        {
+            return dynamic_cast<cStmtsNode*>(GetChild(1));
+        }
+
     private:
         int m_size;
         bool m_isFuncBlock;

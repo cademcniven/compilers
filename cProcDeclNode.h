@@ -49,6 +49,16 @@ class cProcDeclNode : public cDeclNode
             AddChild(block); 
         }
 
+        cBlockNode * GetBlock()
+        {
+            return dynamic_cast<cBlockNode*>(GetChild(2));            
+        }
+
+        string GetName()
+        {
+            return dynamic_cast<cSymbol*>(GetChild(0))->GetName();
+        }
+
         virtual string NodeType() { return string("proc"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual string GetTypeName() { return "Procedure"; }
